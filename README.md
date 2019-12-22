@@ -28,7 +28,7 @@ into `./Data/MembValidation/`. Example data is also through previous data link. 
     ```buildoutcfg
     python shape_analysis.py ./configmemb/shape_config.txt
     ```
-* **Structure of folders**:
+* **Structure of folders**: (empty folders are not shown in the repository)
     ```buildoutcfg
     DMapNet is used to segmented membrane stack of C. elegans at cellular level
     DMapNet/

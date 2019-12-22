@@ -1,0 +1,22 @@
+
+[para]
+##  For acetree information
+acetree_file =
+xy_resolution = 0.18
+z_resolution = 0.42
+# [z, y, x]
+image_size = [68, 712, 512]
+
+
+## For running parameters.
+frist_run = False
+# finished: 181210plc1p1, 181210plc1p2, 181210plc1p3, 181211plc1p1, 181211plc1p2, 181211plc1p3
+embryo_names = [181210plc1p2]
+# The maximum time point used for the referred embryo to construct the cell_tree with specific number of cells.
+max_time = 200
+# ABalapappa 170704plc1p2_Stat.txt
+# last_cell_name = ABalaaapar
+delete_tem_file = False
+seg_folder = ./ResultCell/BothWithRandomnetPostseg
+save_folder = ./ResultCell/StatShape
+save_nucleus_folder = ./ResultCell/NucleusLoc

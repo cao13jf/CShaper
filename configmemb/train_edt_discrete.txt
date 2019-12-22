@@ -1,0 +1,49 @@
+[system]
+num_gpus              = 2
+
+[data]
+data_root             = ./Data/MembTraining
+data_names            = [170704plc1p2, 181215plc1p1]
+label_postfix         = s
+file_postfix          = nii.gz
+with_ground_truth     = True
+batch_size            = 2
+data_shape            = [24, 128, 128, 1]
+label_shape           = [16, 128, 128, 1]
+label_convert_source  = [0, 1]
+label_convert_target  = [0, 1]
+roi_crop              = False
+train_with_roi_patch  = False
+add_boundary_layers   = False
+label_edt_transform   = True
+valid_edt_width       = 30
+label_edt_discrete    = True
+#  Remember to change cross-entropy loss
+edt_discrete_num      = 16
+
+## augmentation
+with_translate        = False
+with_scale            = False
+# much SLOW --> TODO
+with_rotation         = False
+# NO USE
+with_flip             = False
+# 3 training directions: axial(default)+sagittal+random
+slice_direction       = random
+
+[network]
+edt_discrete        = False
+net_type            = DMapNet
+net_name            = DMapNet_PUB
+print_summary       = False
+
+[training]
+record_summary     = True
+summary_dir        = ModelCell/logs
+learning_rate      = 5e-4
+decay              = 1e-7
+maximal_iteration  = 5000
+snapshot_iteration = 500
+test_iteration     = 40
+test_step          = 5
+model_save_prefix  = ./ModelCell/DMapNet_PUB

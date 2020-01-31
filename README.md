@@ -17,7 +17,7 @@ in `./configmemb/train_edt_discrete.txt`, then run
     python train.py ./configmemb/train_edt_discrete.txt
     ```
 * **Test**: Put the raw data (membane and nucleus stack, and CD files from [AceTree](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1501046/))
-into `./Data/MembValidation/`. Example data is also through previous data link. Set parameters in 
+into `./Data/MembValidation/`. Example data is also available through previous data link. Set parameters in 
 `./configmemb/test_edt_discrete.txt` and run
     ```buildoutcfg
     python test_edt.py ./configmemb/test_edt_discrete.txt

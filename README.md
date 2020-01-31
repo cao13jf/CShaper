@@ -6,7 +6,7 @@ Chao Tang, Zhongying Zhao, & Hong Yan.
 
 ### Usage
 This implementation is based on Tensorflow and python3.6, trained with GPU (NVIDIA 2080TI). Details for training
-and testing is listed as below.
+and testing are listed as below.
 * **Intsall dependency library**:
 ```buildoutcfg
     pip install requirements.txt

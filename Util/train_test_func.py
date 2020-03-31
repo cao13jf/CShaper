@@ -54,7 +54,7 @@ def volume_probability_prediction(temp_imgs, data_shape, label_shape, data_chann
             if volume_full_flag:
                 break
         # The batch center is determined by label_shape, and the number of sub_images is determined by the label_shape,
-        # so the final pro after combine should be the same as the original image. 19 rawMemb slices are used to generate
+        # so the final pro after combine should be the same as the original image. 19 RawMemb slices are used to generate
         # only 11 probability slices.
 
     return temp_prob

@@ -497,7 +497,7 @@ def discrete_transform(continuous_img, non_linear = True, num_samples = 16):
     """
     Discretization on continous image.
     Input:
-        continuous_img: rawMemb image with continous value on pixel
+        continuous_img: RawMemb image with continous value on pixel
         num_samples: the number of discretization
     Return:
         discrete_img: discreted image

@@ -91,7 +91,7 @@ def generate_video(file_dir, raw_dir, start_time=1, end_time=90, slice_num=60):
         img_raw = image_data[:,:,slice_num]
         raw_images.append(img_raw)
 
-        # Combine the rawMemb and gray image into one frame
+        # Combine the RawMemb and gray image into one frame
         rows_rgb, cols_rgb, channels = im_color.shape
         im_comb = np.zeros(shape=(rows_rgb, cols_rgb*2, channels), dtype=np.uint8)
         im_comb[:, cols_rgb:] = im_color
@@ -120,4 +120,4 @@ if __name__== '__main__':
 
     # For segmentation
     generate_video('../ResultCell/edt_discrete/BothWithRandomnetPostseg/170704plc1p2_label_unified',
-                   '../Data/MembValidation/170704plc1p2/rawMemb', start_time=1, end_time=120, slice_num=60)
+                   '../Data/MembValidation/170704plc1p2/RawMemb', start_time=1, end_time=120, slice_num=60)

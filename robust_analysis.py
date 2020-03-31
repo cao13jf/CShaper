@@ -10,10 +10,17 @@ import matplotlib.pyplot as plt
 sns.set(style="darkgrid")
 Colors=['red','red', 'red', 'blue','blue','blue']
 
-t_max = 200
-nucleus_folder = "./ResultCell/test_embryo_robust/NucleusLoc"
+# # [200]: 181210plc1p2, 170704plc1p1
+# # [170]: *200311plc1p2*, 200311plc1p3, 200312plc1p1, 200312plc1p3, 200314plc1p3, *200315plc1p1*, 200316plc1p3, 181210plc1p1
+# # [165]: 200309plc1p1, 200312plc1p2,
+# # [160]: 200309plc1p2, 200309plc1p3, *200310plc1p2*, 200311plc1p1, 200315plc1p2, 200315plc1p3, 200316plc1p1, 200316plc1p2
+# # [155]: 200314plc1p2
+# # [150]: 200314plc1p1, 181210plc1p3
+
+t_max = 150
+nucleus_folder = "./ResultCell/NucleusLoc"
 # get all embryos names
-embryos = glob.glob(os.path.join(nucleus_folder, "*1210plc1p2"))
+embryos =[os.path.join(nucleus_folder, embryo_name) for embryo_name in ["170704plc1p1"]]
 
 with open("./ShapeUtil/number_dictionary.txt", "rb") as f:
     number_dict = pickle.load(f)
@@ -31,7 +38,7 @@ for i in range(len(embryos)):
     nucleus_losts = []
     for t in tqdm(range(1, t_max+1), desc="Processing {} TP".format(embryo)):
 
-        nucleus_loc_file = os.path.join(embryo, "nucleus_loc_{}".format(t)+".csv")
+        nucleus_loc_file = os.path.join(embryo, os.path.basename(embryo)+"_"+str(t).zfill(3)+"_nucLoc"+".csv")
         pd_loc = pd.read_csv(nucleus_loc_file)
         nucleus_num = pd_loc[pd_loc.note=="mother"].shape[0] + pd_loc.note.isna().sum() + pd_loc[pd_loc.note=="lost_inner1"].shape[0] + \
                       pd_loc[pd_loc.note == "lost_inner2"].shape[0] + pd_loc[pd_loc.note=="lost_hole"].shape[0]
@@ -45,12 +52,12 @@ for i in range(len(embryos)):
         "nucleus_number": nucleus_nums,
         "nucleus_lost": nucleus_losts
     })
-    save_file = os.path.join("./RobustStat", "nucelus_lost_"+embryo.split("/")[-1]+".csv")
+    save_file = os.path.join("./ShapeUtil/RobustStat", "nucelus_lost_"+embryo.split("/")[-1]+".csv")
     nucleus_stat.to_csv(save_file, index=False)
     sns.lineplot(x="time", y="value", hue="variable", data=pd.melt(nucleus_stat, ["time"]), markers=False, dashes=[(2, 2), (2, 2)], legend=False)
 plt.xlabel(r"Time point (/$1.5min$)")
 plt.ylabel("Cell number (/1)")
-plt.savefig(os.path.join("./RobustStat", "nucelus_lost_all.jpeg"), dpi=600)
+plt.savefig(os.path.join("./ShapeUtil/RobustStat", "nucelus_lost_all.jpeg"), dpi=600)
 
 
 #######################################
@@ -70,7 +77,7 @@ contact_all.to_csv("test_all_contact.csv")
 ####################################
 # combine all volume and surface information
 ####################################
-'''
+
 for embryo in embryos:
     # combien all volume and surface informace
     volume_stat = pd.DataFrame([], columns=[], dtype=np.float32)
@@ -78,7 +85,7 @@ for embryo in embryos:
     volume_lists = []
     surface_lists = []
     for t in tqdm(range(1, t_max + 1), desc="Processing {}".format(embryo.split('/')[-1])):
-        nucleus_loc_file = os.path.join(embryo, "nucleus_loc_{}".format(t)+".csv")
+        nucleus_loc_file = os.path.join(embryo, os.path.basename(embryo)+"_"+str(t).zfill(3)+"_nucLoc"+".csv")
         pd_loc = pd.read_csv(nucleus_loc_file)
         cell_volume_surface = pd_loc[["nucleus_name", "volume", "surface"]]
         cell_volume_surface = cell_volume_surface.set_index("nucleus_name")
@@ -89,12 +96,12 @@ for embryo in embryos:
     volume_stat.to_csv(os.path.join("./ShapeUtil/RobustStat", embryo.split('/')[-1] + "_volume"+'.csv'))
     surface_stat.to_csv(os.path.join("./ShapeUtil/RobustStat", embryo.split('/')[-1] + "_surface"+'.csv'))
 
-    #=================================save for GUI======================
-    # for column in volume_stat.columns:
+#=================================save for GUI======================
+# for column in volume_stat.columns:
 
-    #=================================save for GUI======================
+#=================================save for GUI======================
 
-'''
+
 # output and draw volume
 '''
 surfaces = glob.glob(os.path.join("./RobustStat", "surface_*.csv"))

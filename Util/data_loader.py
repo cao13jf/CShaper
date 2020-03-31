@@ -75,11 +75,11 @@ class DataLoader():
         in_size = []
         data_num = self.data_num if (self.data_num is not None) else len(self.embryo_names)
         for one_embryo_name in self.embryo_names:
-            raw_path = os.path.join(self.data_root[0], one_embryo_name, 'rawMemb')
-            mask_path = os.path.join(self.data_root[0], one_embryo_name, 'segMemb')
+            raw_path = os.path.join(self.data_root[0], one_embryo_name, 'RawMemb')
+            mask_path = os.path.join(self.data_root[0], one_embryo_name, 'SegMemb')
             volumes_lists = os.listdir(raw_path)
             for one_volume_name in tqdm(volumes_lists, desc='Loading Data in ' + raw_path):
-                # load rawMemb volume
+                # load RawMemb volume
                 volume, volume_name = self.__load_one_volume(raw_path, one_volume_name)
                 ## add boundary layers for better boundary discrimination
                 if (self.add_boundary_layers):

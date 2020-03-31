@@ -18,7 +18,7 @@ def test(config_file):
     #               1, Load configuration parameters
     #=============================================================
     config = parse_config(config_file)
-    config_data = config['Data']
+    config_data = config['data']
     config_net1 = config.get('network1', None)
     config_test = config['testing']
     batch_size = config_test.get('batch_size', 5)
@@ -40,6 +40,7 @@ def test(config_file):
         net1 = net_class1(num_classes=class_num1, w_regularizer=None,
                           b_regularizer=None, name=net_name1)
         net1.set_params(config_net1)
+
         predicty1 = net1(x1, is_training=True)
         if (label_edt_discrete):
             proby1 = tf.nn.softmax(predicty1)
@@ -148,9 +149,10 @@ def test(config_file):
             final_label = np.zeros(temp_size, out_label.dtype)
             final_label = set_ND_volume_roi_with_bounding_box_range(final_label, temp_bbox[0], temp_bbox[1], out_label)
             final_label = transpose_volumes_reverse(final_label, slice_direction)
-            save_array_as_nifty_volume(final_label, os.path.join(save_folder,emrbyo_name, emrbyo_name + "_" + img_names.split(".")[0].split("_")[1] + "_segMemb.nii.gz")) # os.path.join(save_folder, one_embryo, one_embryo + "_" + tp_str.zfill(3) + "_cell.nii.gz")
+            save_file = os.path.join(save_folder,emrbyo_name, emrbyo_name + "_" + img_names.split(".")[0].split("_")[1] + "_segMemb.nii.gz")
+            save_array_as_nifty_volume(final_label, save_file) # os.path.join(save_folder, one_embryo, one_embryo + "_" + tp_str.zfill(3) + "_cell.nii.gz")
 
-            print(os.path.join(save_folder,emrbyo_name, img_names))
+            print(save_file)
         test_time = np.asarray(test_time)
         print('test time', test_time.mean())
         np.savetxt(save_folder + '/test_time.txt', test_time)

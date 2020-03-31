@@ -1,0 +1,7 @@
+
+./configmemb/shape_configs/shape_config_150.txt
+./configmemb/shape_configs/shape_config_155.txt
+./configmemb/shape_configs/shape_config_160.txt
+./configmemb/shape_configs/shape_config_165.txt
+./configmemb/shape_configs/shape_config_170.txt
+./configmemb/shape_configs/shape_config_200.txt

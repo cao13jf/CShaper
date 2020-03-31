@@ -1,5 +1,6 @@
 
 # import dependency library
+import sys
 import shutil
 from tqdm import tqdm
 from scipy import ndimage
@@ -9,6 +10,7 @@ from ShapeUtil.draw_lib import *
 from ShapeUtil.data_structure import *
 
 # import user defined library
+from Util.post_lib import check_folder_exist
 from Util.parse_config import parse_config
 from Util.segmentation_post_process import save_nii
 
@@ -151,13 +153,14 @@ def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
     ## extract nucleus location information in the aceTree
     nucleus_location = df_t.loc[:, ['z', 'x', 'y']].copy()
     ace_shape = config['image_size'].copy()
-    nucleus_location['z'] = nucleus_location['z'] * config['z_resolution'] / config['xy_resolution']
-    ace_shape[0] = ace_shape[0] * config['z_resolution'] / config['xy_resolution']
+    # nucleus_location['z'] = nucleus_location['z'] * config['z_resolution'] / config['xy_resolution']
+    # ace_shape[0] = ace_shape[0] * config['z_resolution'] / config['xy_resolution']
     nucleus_location = nucleus_location.values
 
     ## load seg volume
     seg = nib.load(seg_file).get_data().transpose([2, 1, 0])
     nucleus_location_zoom = (nucleus_location * np.array(seg.shape) / np.array(ace_shape)).astype(np.uint16)
+    nucleus_location_zoom[:, 0] = seg.shape[0] - nucleus_location_zoom[:, 0]
     # nucleus_location_zoom[:, 0] = seg.shape[0] - nucleus_location_zoom[:, 0]  # the embryo is reversed at z axis
     ####################To save nucleus location Data##########################
     nucleus_loc_to_save = pd.DataFrame.from_dict({'nucleus_label':nucleus_number, 'nucleus_name':nucleus_names,
@@ -227,7 +230,10 @@ def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
             # nucleus locates in the background
             nucleus_loc_to_save.loc[nucleus_loc_to_save.nucleus_label==target_label, "note"] = "lost_hole"
             update_time_tree(config['embryo_name'], name_dict[target_label], time_point, file_lock, add=False)
-    nucleus_loc_to_save.to_csv(save_name, index=False) #######################
+
+    check_folder_exist(save_name)
+    nucleus_loc_to_save.to_csv(save_name, index=False) ######################
+    check_folder_exist(save_name_fast_read)
     with open(save_name_fast_read, 'wb') as f:
         pickle.dump(nucleus_loc_to_save, f)
 
@@ -433,7 +439,8 @@ def update_daughter_info(nucleus_loc_info, ch1, ch2, mother):
 
 if __name__ == '__main__':
 
-    config_file = './configmemb/shape_config.txt'
+    config_file = str(sys.argv[1])
+    assert (os.path.isfile(config_file))
     config = parse_config(config_file)
     # Construct folder
     para_config = config['para']

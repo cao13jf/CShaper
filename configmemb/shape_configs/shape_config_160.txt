@@ -1,0 +1,22 @@
+
+[para]
+image_size = [68, 712, 512]
+
+
+## For running parameters.
+frist_run = False
+# # [200]: 181210plc1p2
+# # [170]: [200311plc1p2], 200311plc1p3, 200312plc1p1, 200312plc1p3, 200314plc1p3, [200315plc1p1], 200316plc1p3, 181210plc1p1
+# # [165]: 200309plc1p1, 200312plc1p2,
+# # [160]: 200309plc1p2, 200309plc1p3, [200310plc1p2], 200311plc1p1, 200315plc1p2, 200315plc1p3, 200316plc1p1, 200316plc1p2
+# # [155]: 200314plc1p2
+# # [150]: 200314plc1p1
+embryo_names = [200309plc1p2, 200309plc1p3, [200310plc1p2], 200311plc1p1, 200315plc1p2, 200315plc1p3, 200316plc1p1, 200316plc1p2]
+# The maximum time point used for the referred embryo to construct the cell_tree with specific number of cells.
+max_time = 160
+# ABalapappa 170704plc1p2_Stat.txt
+# last_cell_name = ABalaaapar
+delete_tem_file = False
+seg_folder = ./ResultCell/BothWithRandomnetPostseg
+save_folder = ./ResultCell/StatShape
+save_nucleus_folder = ./ResultCell/NucleusLoc

@@ -6,13 +6,18 @@ import random
 import numpy as np
 import nibabel as nib
 import matplotlib.pyplot as plt
+from itertools import combinations
 from scipy import ndimage, stats
 from scipy.spatial import Delaunay
 from skimage.morphology import h_maxima
 from scipy.ndimage import morphology, binary_dilation, binary_opening
 
 
-def show_2D_array_as_image(image0):
+def check_folder_exist(file_name):
+    if not os.path.isdir(os.path.dirname(file_name)):
+        os.makedirs(os.path.dirname(file_name))
+
+def how_2D_array_as_image(image0):
     random.seed(1)
     image = (image0 / np.max(image0) * 250).astype(np.uint8)
     plt.imshow(image)
@@ -31,12 +36,12 @@ def all_points_inline(x0, x1):
     D = d[j]
     aD = np.abs(D)
 
-    return x0 + (np.outer(np.arange(aD + 1), d) + (aD >> 1)) // aD
+    return x0 + (np.outer(np.arange(aD + 1), d) + (aD >> 1)) // (aD + 1e-6)
 
 
 def line_weight_integral(x0, x1, weight_volume):
     # find all points between start and end
-    inline_points = all_points_inline(x0, x1)
+    inline_points = all_points_inline(x0, x1).astype(np.uint16)
     points_num = inline_points.shape[0]
     line_weight = 0
     for i in range(points_num):
@@ -65,19 +70,20 @@ def construct_weighted_graph(bin_image, local_max_h = 2):
     local_maxima_mask = h_maxima(bin_cell_edt, local_max_h)
     [maxima_x, maxima_y, maxima_z] = np.nonzero(local_maxima_mask)
     #  find boundary points to force large weight
-    x0 = np.where(maxima_x == 0)[0]; x1 = np.where(maxima_x == volume_shape[0] - 1)[0]
-    y0 = np.where(maxima_y == 0)[0]; y1 = np.where(maxima_y == volume_shape[1] - 1)[0]
-    z0 = np.where(maxima_z == 0)[0]; z1 = np.where(maxima_z == volume_shape[2] - 1)[0]
+    x0 = np.where(maxima_x == 0)[0];
+    x1 = np.where(maxima_x == volume_shape[0] - 1)[0]
+    y0 = np.where(maxima_y == 0)[0];
+    y1 = np.where(maxima_y == volume_shape[1] - 1)[0]
+    z0 = np.where(maxima_z == 0)[0];
+    z1 = np.where(maxima_z == volume_shape[2] - 1)[0]
     b_indx = np.concatenate((x0, y0, z0, x1, y1, z1), axis=None).tolist()
-
     point_list = np.stack((maxima_x, maxima_y, maxima_z), axis=1)
     tri_of_max = Delaunay(point_list)
     triangle_list = tri_of_max.simplices
     edge_list = []
     for i in range(triangle_list.shape[0]):
-        for j in range(triangle_list.shape[1]-1):
-            edge_list.append([triangle_list[i][j-1], triangle_list[i][j]])
-        edge_list.append([triangle_list[i][j], triangle_list[i][0]])
+        for combine_pairs in combinations(triangle_list[i].tolist(), r=2):
+            edge_list.append([combine_pairs[0], combine_pairs[1]])
     # add edges for all boundary points
     for i in range(len(b_indx)):
         for j in range(i, len(b_indx)):
@@ -91,7 +97,7 @@ def construct_weighted_graph(bin_image, local_max_h = 2):
     edge_weight_list = []
     for one_edge in edge_list:
         start_x0 = point_list[one_edge[0]]
-        end_x1   = point_list[one_edge[1]]
+        end_x1 = point_list[one_edge[1]]
         if (one_edge[0] in b_indx) and (one_edge[1] in b_indx):
             edge_weight = 0  # All edges between boundary points are set as zero
         elif (one_edge[0] in b_indx) or (one_edge[1] in b_indx):
@@ -109,11 +115,11 @@ def generate_graph_model(point_list, edge_list, edge_weight_list, img):
     Generate nii image for graph model
     :param point_list: local maximum list
     :param edge_list: edges list
-    :param img: rawMemb image for shape
+    :param img: RawMemb image for shape
     :return:
     '''
     mask_max = np.zeros_like(img, np.uint8)
-    tem_point_list = np.transpose(np.array(point_list), [1,0]).tolist()
+    tem_point_list = np.transpose(np.array(point_list), [1,0]).astype(np.uint8).tolist()
     mask_max[tem_point_list[0], tem_point_list[1], tem_point_list[2]] = 1
     mask_max = ndimage.morphology.binary_dilation(mask_max, iterations=5)
     valid_edge_volume = np.zeros_like(img, np.uint8)
@@ -122,7 +128,7 @@ def generate_graph_model(point_list, edge_list, edge_weight_list, img):
         start_x0 = point_list[one_edge[0]]
         end_x1   = point_list[one_edge[1]]
         inline_points = all_points_inline(start_x0, end_x1)
-        tem_point_list = np.transpose(np.array(inline_points), [1, 0]).tolist()
+        tem_point_list = np.transpose(np.array(inline_points), [1, 0]).astype(np.uint16).tolist()
         if edge_weight_list[i] < 10:
             valid_edge_volume[tem_point_list[0], tem_point_list[1], tem_point_list[2]] = 1
         else:
@@ -226,7 +232,7 @@ def get_eggshell(wide_type_name):
     :param embryo_name:
     :return:
     '''
-    wide_type_folder = os.path.join("./Data/MembValidation", wide_type_name, "rawMemb")
+    wide_type_folder = os.path.join("./Data/MembValidation", wide_type_name, "RawMemb")
     embryo_tp_list = glob.glob(os.path.join(wide_type_folder, "*.nii.gz"))
     overlap_num = 15 if len(embryo_tp_list) > 15 else len(embryo_tp_list)
     embryo_sum = nib.load(embryo_tp_list[0]).get_fdata()

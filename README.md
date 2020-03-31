@@ -6,7 +6,7 @@ Chao Tang, Zhongying Zhao, & Hong Yan.
 
 ### Usage
 This implementation is based on Tensorflow and python3.6, trained with GPU (NVIDIA 2080TI). Details for training
-and testing is listed as below.
+and testing are listed as below.
 * **Intsall dependency library**:
 ```buildoutcfg
     pip install requirements.txt
@@ -17,7 +17,7 @@ in `./configmemb/train_edt_discrete.txt`, then run
     python train.py ./configmemb/train_edt_discrete.txt
     ```
 * **Test**: Put the raw data (membane and nucleus stack, and CD files from [AceTree](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1501046/))
-into `./Data/MembValidation/`. Example data is also through previous data link. Set parameters in 
+into `./Data/MembValidation/`. Example data is also available through previous data link. Set parameters in 
 `./configmemb/test_edt_discrete.txt` and run
     ```buildoutcfg
     python test_edt.py ./configmemb/test_edt_discrete.txt
@@ -28,7 +28,7 @@ into `./Data/MembValidation/`. Example data is also through previous data link. 
     ```buildoutcfg
     python shape_analysis.py ./configmemb/shape_config.txt
     ```
-* **Structure of folders**:
+* **Structure of folders**: (empty folders are not shown in the repository)
     ```buildoutcfg
     DMapNet is used to segmented membrane stack of C. elegans at cellular level
     DMapNet/

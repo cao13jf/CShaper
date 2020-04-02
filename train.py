@@ -36,27 +36,25 @@ def train(config_file):
     #               1, Load configuration parameters
     #=============================================================
     config = parse_config(config_file)
-    config_data  = config['Data']
-    config_net   = config['network']
+    config_data = config['Data']
+    config_net = config['network']
     config_train = config['training']
     random.seed(config_train.get('random_seed', 1))
     assert(config_data['with_ground_truth'])
-    net_type    = config_net['net_type']
-    net_name    = config_net['net_name']
-    class_num   = config_data['edt_discrete_num']
-    label_edt_discrete= config_data['label_edt_discrete']
-    batch_size  = config_data.get('batch_size', 5)
+    net_type = config_net['net_type']
+    net_name = config_net['net_name']
+    class_num = config_data['edt_discrete_num']
+    label_edt_discrete = config_data['label_edt_discrete']
+    batch_size = config_data.get('batch_size', 5)
 
 
     #==============================================================
     #               2, Construct computation graph
     #==============================================================
-    full_data_shape  = [batch_size] + config_data['data_shape']  # Batch size + original Data size
-    full_label_shape = [batch_size] + config_data['label_shape']
+    full_data_shape = [batch_size] + config_data['data_shape']  # Batch size + original Data size
     tf.reset_default_graph()
     with tf.name_scope('model_builder'):
         x = tf.placeholder(tf.float32, shape = full_data_shape, name='Input')  # Place holder to transfer Data
-        w = tf.placeholder(tf.float32, shape = full_label_shape, name='Weight')
         if label_edt_discrete:
             y = tf.placeholder(tf.uint8, [batch_size]+config_data['label_shape'], name='Label')
         else:
@@ -124,19 +122,17 @@ def train(config_file):
     loss_list, temp_loss_list = [], []
     for n in range(start_it, config_train['maximal_iteration']):
         train_pair = dataloader.get_subimage_batch()
-        tempx = train_pair['images']
-        tempw = train_pair['weights']
-        tempy = train_pair['labels']
-        sess.run(opt_step, feed_dict={x:tempx, w: tempw, y:tempy})
+        input_x = train_pair['images']
+        output_y = train_pair['labels']
+        sess.run(opt_step, feed_dict={x:input_x, y:output_y})
 
         if(n%config_train['test_iteration'] == 0):
             batch_dice_list = []
             for step in range(config_train['test_step']):
                 train_pair = dataloader.get_subimage_batch()
-                tempx = train_pair['images']
-                tempw = train_pair['weights']
-                tempy = train_pair['labels']
-                dice = loss.eval(feed_dict ={x:tempx, w:tempw, y:tempy})
+                input_x = train_pair['images']
+                output_y = train_pair['labels']
+                dice = loss.eval(feed_dict ={x:input_x, y:output_y})
                 batch_dice_list.append(dice)
             batch_dice = np.asarray(batch_dice_list, np.float32).mean()
             t = time.strftime('%X %x %Z')
@@ -149,10 +145,10 @@ def train(config_file):
             saver.save(sess, config_train['model_save_prefix']+"_{0:}.ckpt".format(n+1))
         ##  ~~~~~inspect intermediate results~~~~(optional)
         # if(n%100 == 0):
-        #     s = sess.run(summ, feed_dict={x: tempx, w: tempw, y: tempy})
+        #     s = sess.run(summ, feed_dict={x: input_x, y: output_y})
         #     saver_summary.add_summary(s, n)
         # if(n%10==0):
-        #     s = sess.run(loss_summary, feed_dict={x: tempx, w: tempw, y: tempy})
+        #     s = sess.run(loss_summary, feed_dict={x: input_x, y: output_y})
         #     saver_summary.add_summary(s, n)
 
     timestr = time.strftime('%m_%d_%H_%M')

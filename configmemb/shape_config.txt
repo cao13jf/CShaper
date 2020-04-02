@@ -15,8 +15,6 @@ frist_run = False
 embryo_names = [170704plc1p1]
 # The maximum time point used for the referred embryo to construct the cell_tree with specific number of cells.
 max_time = 200
-# ABalapappa 170704plc1p2_Stat.txt
-# last_cell_name = ABalaaapar
 delete_tem_file = False
 seg_folder = ./ResultCell/BothWithRandomnetPostseg
 save_folder = ./ResultCell/StatShape

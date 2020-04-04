@@ -119,5 +119,5 @@ def generate_lut(N=256):
 if __name__== '__main__':
 
     # For segmentation
-    generate_video('../ResultCell/edt_discrete/BothWithRandomnetPostseg/170704plc1p2_label_unified',
-                   '../Data/MembValidation/170704plc1p2/RawMemb', start_time=1, end_time=120, slice_num=60)
+    generate_video('../ResultCell/edt_discrete/BinaryMembPostseg/170704plc1p2_label_unified',
+                   '../Data/MembTest/170704plc1p2/RawMemb', start_time=1, end_time=120, slice_num=60)

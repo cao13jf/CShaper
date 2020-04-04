@@ -621,6 +621,6 @@ def get_cell_surface_mask(cell_volume):
 #===================================================================#
 if __name__=="__main__":
     start_time = time.time()
-    seg = nib.load("/home/jeff/ProjectCode/LearningCell/DMapNet/ResultCell/test_embryo_robust/BothWithRandomnetPostseg/181210plc1p2_volume_recovered/membT4CellwithMmeb.nii.gz").get_fdata()
+    seg = nib.load("/home/jeff/ProjectCode/LearningCell/DMapNet/ResultCell/test_embryo_robust/BinaryMembPostseg/181210plc1p2_volume_recovered/membT4CellwithMmeb.nii.gz").get_fdata()
     save_numpy_as_json(seg, "/home/jeff/ProjectCode/LearningCell/DMapNet/jsonSample4.json")
     print("runing time: {}s".format(time.time() - start_time))

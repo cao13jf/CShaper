@@ -1,4 +1,4 @@
-for config_file in "./configmemb/test_edt_configs"/*
+for config_file in "./ConfigMemb/TestEdtConfigs"/*
 do
     /bin/python3.6 test_edt.py $config_file
 done

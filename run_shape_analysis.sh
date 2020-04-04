@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "" > shape_analysis_fail.txt
-for config_file in "./configmemb/shape_configs"/*
+for config_file in "./ConfigMemb/ShapeCnfigs"/*
 do
     echo $config_file
     error=true

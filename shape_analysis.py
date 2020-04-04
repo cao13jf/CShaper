@@ -450,7 +450,7 @@ if __name__ == '__main__':
     embryo_names = para_config["embryo_names"]
     for embryo_name in embryo_names:
         para_config["embryo_name"] = embryo_name
-        para_config["acetree_file"] = os.path.join("./Data/MembValidation", para_config['embryo_name'], "CD" + para_config['embryo_name']+".csv")
+        para_config["acetree_file"] = os.path.join("./Data/MembTest", para_config['embryo_name'], "CD" + para_config['embryo_name']+".csv")
         if not os.path.isdir(os.path.join(para_config['save_nucleus_folder'], para_config['embryo_name'])):
             os.makedirs(os.path.join(para_config['save_nucleus_folder'], para_config['embryo_name']))
         else:

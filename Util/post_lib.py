@@ -232,7 +232,7 @@ def get_eggshell(wide_type_name):
     :param embryo_name:
     :return:
     '''
-    wide_type_folder = os.path.join("./Data/MembValidation", wide_type_name, "RawMemb")
+    wide_type_folder = os.path.join("./Data/MembTest", wide_type_name, "RawMemb")
     embryo_tp_list = glob.glob(os.path.join(wide_type_folder, "*.nii.gz"))
     overlap_num = 15 if len(embryo_tp_list) > 15 else len(embryo_tp_list)
     embryo_sum = nib.load(embryo_tp_list[0]).get_fdata()

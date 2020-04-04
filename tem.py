@@ -9,7 +9,7 @@ from skimage.morphology import h_maxima
 from Util.post_lib import construct_weighted_graph, line_weight_integral, generate_graph_model
 from Util.segmentation_post_process import save_nii
 
-bin_image = nib.load("ResultCell/BothWithRandomnet/181210plc1p2/181210plc1p2_021_segMemb.nii.gz").get_fdata().transpose() == 0
+bin_image = nib.load("ResultCell/BinaryMemb/181210plc1p2/181210plc1p2_021_segMemb.nii.gz").get_fdata().transpose() == 0
 
 volume_shape = bin_image.shape
 bin_cell = ndimage.morphology.binary_opening(bin_image).astype(np.float)

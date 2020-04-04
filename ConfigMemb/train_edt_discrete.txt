@@ -24,7 +24,6 @@ edt_discrete_num      = 16
 ## augmentation
 with_translate        = False
 with_scale            = False
-# much SLOW --> TODO
 with_rotation         = False
 # NO USE
 with_flip             = False

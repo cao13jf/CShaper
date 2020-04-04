@@ -19,33 +19,33 @@ def test(config_file):
     #=============================================================
     config = parse_config(config_file)
     config_data = config['data']
-    config_net1 = config.get('network1', None)
+    config_net = config.get('network', None)
     config_test = config['testing']
     batch_size = config_test.get('batch_size', 5)
     label_edt_discrete = config_data.get('label_edt_discrete', False)
     if not config_test['only_post_process']:
-        net_type1 = config_net1['net_type']
-        net_name1 = config_net1['net_name']
-        data_shape1 = config_net1['data_shape']
-        label_shape1 = config_net1['label_shape']
-        class_num1 = config_data.get('edt_discrete_num', 16)
+        net_type = config_net['net_type']
+        net_name = config_net['net_name']
+        data_shape = config_net['data_shape']
+        label_shape = config_net['label_shape']
+        class_num = config_data.get('edt_discrete_num', 16)
 
 
         # ==============================================================
         #               2, Construct computation graph
         # ==============================================================
-        full_data_shape1 = [batch_size] + data_shape1
-        x1 = tf.placeholder(tf.float32, shape=full_data_shape1)
-        net_class1 = NetFactory.create(net_type1)
-        net1 = net_class1(num_classes=class_num1, w_regularizer=None,
-                          b_regularizer=None, name=net_name1)
-        net1.set_params(config_net1)
+        full_data_shape = [batch_size] + data_shape
+        x1 = tf.placeholder(tf.float32, shape=full_data_shape)
+        net_class = NetFactory.create(net_type)
+        net = net_class(num_classes=class_num, w_regularizer=None,
+                          b_regularizer=None, name=net_name)
+        net.set_params(config_net)
 
-        predicty1 = net1(x1, is_training=True)
+        predicty = net(x1, is_training=True)
         if (label_edt_discrete):
-            proby1 = tf.nn.softmax(predicty1)
+            proby = tf.nn.softmax(predicty)
         else:
-            proby1 = predicty1
+            proby = predicty
 
         # ==============================================================
         #               3, Data loader
@@ -57,25 +57,25 @@ def test(config_file):
         # For axial direction
         temp_imgs_axial = transpose_volumes(temp_imgs, slice_direction='axial')
         [D, H, W] = temp_imgs_axial.shape
-        Hx = max(int((H + 3) / 4) * 4, data_shape1[1])  # TODO: why do this
-        Wx = max(int((W + 3) / 4) * 4, data_shape1[2])
-        data_slice = data_shape1[0]
-        label_slice = label_shape1[0]
-        full_data_shape = [batch_size, data_slice, Hx, Wx, data_shape1[-1]]
+        Hx = max(int((H + 3) / 4) * 4, data_shape[1])  
+        Wx = max(int((W + 3) / 4) * 4, data_shape[2])
+        data_slice = data_shape[0]
+        label_slice = label_shape[0]
+        full_data_shape = [batch_size, data_slice, Hx, Wx, data_shape[-1]]
         x_axial = tf.placeholder(tf.float32, full_data_shape)
-        predicty_axial = net1(x_axial, is_training=True)  # TODO: why "is training"
+        predicty_axial = net(x_axial, is_training=True) 
         # proby = predicty
         proby_axial = tf.nn.softmax(predicty_axial)
 
         # For sagittal direction
         temp_imgs = transpose_volumes(temp_imgs, slice_direction='sagittal')
         [D, H, W] = temp_imgs.shape
-        Hx = max(int((H + 3) / 4) * 4, data_shape1[1])  # TODO: why do this
-        Wx = max(int((W + 3) / 4) * 4, data_shape1[2])
-        data_slice = data_shape1[0]
-        full_data_shape = [batch_size, data_slice, Hx, Wx, data_shape1[-1]]
+        Hx = max(int((H + 3) / 4) * 4, data_shape[1]) 
+        Wx = max(int((W + 3) / 4) * 4, data_shape[2])
+        data_slice = data_shape[0]
+        full_data_shape = [batch_size, data_slice, Hx, Wx, data_shape[-1]]
         x = tf.placeholder(tf.float32, full_data_shape)
-        predicty = net1(x, is_training=True)  # TODO: why "is training"
+        predicty = net(x, is_training=True)
         # proby = predicty
         proby = tf.nn.softmax(predicty)
 
@@ -86,9 +86,9 @@ def test(config_file):
         sess = tf.InteractiveSession()
         sess.run(tf.global_variables_initializer())
         net1_vars = [x for x in all_vars if
-                     x.name[0:len(net_name1) + 1] == net_name1 + '/']
+                     x.name[0:len(net_name) + 1] == net_name + '/']
         saver1 = tf.train.Saver(net1_vars)
-        saver1.restore(sess, config_net1['model_file'])
+        saver1.restore(sess, config_net['model_file'])
         sess.graph.finalize()
         slice_direction = config_test.get('slice_direction', 'axial')
         save_folder = config_data['save_folder']
@@ -108,13 +108,13 @@ def test(config_file):
                 temp_bbox = [[a[1], a[0], a[2]] for a in tem_box]
                 temp_size = (temp_size[1], temp_size[0], temp_size[2])
             t0 = time.time()
-            data_shapes = [data_shape1[:-1]]
-            label_shapes = [label_shape1[:-1]]
-            data_channel = data_shape1[-1]
-            nets = [net1]
+            data_shapes = [data_shape[:-1]]
+            label_shapes = [label_shape[:-1]]
+            data_channel = data_shape[-1]
+            nets = [net]
             outputs = [proby1]
             inputs = [x1]
-            class_num = class_num1
+            class_num = class_num
             prob_sagittal = test_one_image_three_nets_adaptive_shape(temp_imgs_sagittal, data_shapes, label_shapes, data_channel, class_num,
                                                              batch_size, sess, nets, outputs, inputs, proby, x, shape_mode=2)
             # Combine results from two different directions. In fusion stage, refinement is based on sagittal direction

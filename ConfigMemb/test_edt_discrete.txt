@@ -40,7 +40,7 @@ nucleus_filter       = True
 ## parameters for post processing
 [segdata]
 membseg_path       = ResultCell
-nucleus_data_root  = Data/MembValidation
+nucleus_data_root  = Data/MembTest
 
 [result]
 save_cell_withmemb = True

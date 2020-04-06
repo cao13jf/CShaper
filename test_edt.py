@@ -35,49 +35,45 @@ def test(config_file):
         #               2, Construct computation graph
         # ==============================================================
         full_data_shape = [batch_size] + data_shape
-        x1 = tf.placeholder(tf.float32, shape=full_data_shape)
+        input_x = tf.placeholder(tf.float32, shape=full_data_shape)
         net_class = NetFactory.create(net_type)
-        net = net_class(num_classes=class_num, w_regularizer=None,
-                          b_regularizer=None, name=net_name)
+        net = net_class(num_classes=class_num, w_regularizer=None, b_regularizer=None, name=net_name)
         net.set_params(config_net)
 
-        predicty = net(x1, is_training=True)
+        net_output = net(input_x, is_training=True)
         if (label_edt_discrete):
-            proby = tf.nn.softmax(predicty)
+            net_result = tf.nn.softmax(net_output)
         else:
-            proby = predicty
+            net_result = net_output
 
         # ==============================================================
         #               3, Data loader
         # ==============================================================
         dataloader = DataLoader(config_data)
         dataloader.load_data()
-        image_num = dataloader.get_total_image_number()
         [temp_imgs, temp_weight, img_names, emrbyo_name, temp_bbox, temp_size] = dataloader.get_image_data_with_name(0)
+        
         # For axial direction
-        temp_imgs_axial = transpose_volumes(temp_imgs, slice_direction='axial')
-        [D, H, W] = temp_imgs_axial.shape
+        temp_img_axial = transpose_volumes(temp_imgs, slice_direction='axial')
+        [D, H, W] = temp_img_axial.shape
         Hx = max(int((H + 3) / 4) * 4, data_shape[1])  
         Wx = max(int((W + 3) / 4) * 4, data_shape[2])
         data_slice = data_shape[0]
-        label_slice = label_shape[0]
         full_data_shape = [batch_size, data_slice, Hx, Wx, data_shape[-1]]
         x_axial = tf.placeholder(tf.float32, full_data_shape)
-        predicty_axial = net(x_axial, is_training=True) 
-        # proby = predicty
+        predicty_axial = net(x_axial, is_training=True)
         proby_axial = tf.nn.softmax(predicty_axial)
 
         # For sagittal direction
         temp_imgs = transpose_volumes(temp_imgs, slice_direction='sagittal')
         [D, H, W] = temp_imgs.shape
-        Hx = max(int((H + 3) / 4) * 4, data_shape[1]) 
+        Hx = max(int((H + 3) / 4) * 4, data_shape[1])  
         Wx = max(int((W + 3) / 4) * 4, data_shape[2])
         data_slice = data_shape[0]
         full_data_shape = [batch_size, data_slice, Hx, Wx, data_shape[-1]]
-        x = tf.placeholder(tf.float32, full_data_shape)
-        predicty = net(x, is_training=True)
-        # proby = predicty
-        proby = tf.nn.softmax(predicty)
+        x_sagittal = tf.placeholder(tf.float32, full_data_shape)
+        predicty_sagittal = net(x_sagittal, is_training=True)
+        proby_sagittal = tf.nn.softmax(predicty_sagittal)
 
         # ==============================================================
         #               4, Start prediction
@@ -85,10 +81,9 @@ def test(config_file):
         all_vars = tf.global_variables()
         sess = tf.InteractiveSession()
         sess.run(tf.global_variables_initializer())
-        net1_vars = [x for x in all_vars if
-                     x.name[0:len(net_name) + 1] == net_name + '/']
-        saver1 = tf.train.Saver(net1_vars)
-        saver1.restore(sess, config_net['model_file'])
+        net1_vars = [x for x in all_vars if x.name[0:len(net_name) + 1] == net_name + '/']
+        saver = tf.train.Saver(net1_vars)
+        saver.restore(sess, config_net['model_file'])
         sess.graph.finalize()
         slice_direction = config_test.get('slice_direction', 'axial')
         save_folder = config_data['save_folder']
@@ -97,8 +92,8 @@ def test(config_file):
         test_time = []
         data_number = config_data.get('max_time', 100) * len(config_data["data_names"])
         for i in tqdm(range(0, data_number), desc='Segmenting Data:'):
-            [temp_imgs, temp_weight, img_names, emrbyo_name, temp_bbox, temp_size] = dataloader.get_image_data_with_name(i)
-            temp_imgs_sagittal = transpose_volumes(temp_imgs, slice_direction)
+            [temp_imgs, img_names, emrbyo_name, temp_bbox, temp_size] = dataloader.get_image_data_with_name(i)
+            temp_img_sagittal = transpose_volumes(temp_imgs, slice_direction)
             if (slice_direction == 'sagittal'):
                 tem_box = temp_bbox.copy()
                 temp_bbox = [[a[2], a[0], a[1]] for a in tem_box]
@@ -108,20 +103,13 @@ def test(config_file):
                 temp_bbox = [[a[1], a[0], a[2]] for a in tem_box]
                 temp_size = (temp_size[1], temp_size[0], temp_size[2])
             t0 = time.time()
-            data_shapes = [data_shape[:-1]]
-            label_shapes = [label_shape[:-1]]
-            data_channel = data_shape[-1]
-            nets = [net]
-            outputs = [proby1]
-            inputs = [x1]
-            class_num = class_num
-            prob_sagittal = test_one_image_three_nets_adaptive_shape(temp_imgs_sagittal, data_shapes, label_shapes, data_channel, class_num,
-                                                             batch_size, sess, nets, outputs, inputs, proby, x, shape_mode=2)
+            prob_sagittal = predict_full_volume(temp_img_sagittal, data_shape[:-1], label_shape[:-1], data_shape[-1],
+                                                class_num, batch_size, sess, proby_sagittal, x_sagittal)
             # Combine results from two different directions. In fusion stage, refinement is based on sagittal direction
             if config_test.get('direction_fusion', False):
-                temp_imgs_axial = transpose_volumes(temp_imgs, slice_direction = 'axial')
-                prob_axial = test_one_image_three_nets_adaptive_shape(temp_imgs_axial, data_shapes, label_shapes, data_channel, class_num,
-                                                                 batch_size, sess, nets, outputs, inputs, proby_axial, x_axial, shape_mode=2)
+                temp_img_axial = transpose_volumes(temp_imgs, slice_direction = 'axial')
+                prob_axial = predict_full_volume(temp_img_axial, data_shape[:-1], label_shape[:-1], data_shape[-1],
+                                                 class_num, batch_size, sess, proby_axial, x_axial)
 
             # If the prediction is one-hot tensor, use np.argmax to get the indices of the maximumm. That indice is used as label
             if(label_edt_discrete):  # If we hope to predict discrete EDT map, argmax on the indices depth
@@ -147,7 +135,7 @@ def test(config_file):
             # ==============================================================
             test_time.append(time.time() - t0)
             final_label = np.zeros(temp_size, out_label.dtype)
-            final_label = set_ND_volume_roi_with_bounding_box_range(final_label, temp_bbox[0], temp_bbox[1], out_label)
+            final_label = set_crop_to_volume(final_label, temp_bbox[0], temp_bbox[1], out_label)
             final_label = transpose_volumes_reverse(final_label, slice_direction)
             save_file = os.path.join(save_folder,emrbyo_name, emrbyo_name + "_" + img_names.split(".")[0].split("_")[1] + "_segMemb.nii.gz")
             save_array_as_nifty_volume(final_label, save_file) # os.path.join(save_folder, one_embryo, one_embryo + "_" + tp_str.zfill(3) + "_cell.nii.gz")

@@ -13,14 +13,15 @@ from skimage import morphology
 import SimpleITK as sitk
 import nibabel as nib
 
+#===================================================================================#
+#                           Basic file functions
+#===================================================================================#
 def search_file_in_folder_list(folder_list, file_name):
     """
     Find the full filename from a list of folders
-    inputs:
-        folder_list: a list of folders
-        file_name:  filename
-    outputs:
-        full_file_name: the full filename
+    :param folder_list: a list of folders
+    :param file_name:  filename
+    :return full_file_name: the full filename
     """
     file_exist = False
     for folder in folder_list:
@@ -33,26 +34,24 @@ def search_file_in_folder_list(folder_list, file_name):
     return full_file_name
 
 def load_3d_volume_as_array(filename):
+    """
+    load nifty file as array
+    :param filename:file name
+    :return array: 3D volume array
+    """
     if('.nii' in filename):
         return load_nifty_volume_as_array(filename)
-    elif('.mha' in filename):
-        return load_mha_volume_as_array(filename)
     raise ValueError('{0:} unspported file format'.format(filename))
-
-def load_mha_volume_as_array(filename):
-    img = sitk.ReadImage(filename)
-    nda = sitk.GetArrayFromImage(img)
-    return nda
 
 def load_nifty_volume_as_array(filename, with_header = False):
     """
     load nifty image into numpy array, and transpose it based on the [z,y,x] axis order
     The output array shape is like [Depth, Height, Width]
-    inputs:
-        filename: the input file name, should be *.nii or *.nii.gz
-        with_header: return affine and hearder infomation
-    outputs:
-        Data: a numpy Data array
+    :param filename: the input file name, should be *.nii or *.nii.gz
+    :param with_header: return affine and hearder infomation
+    :return Data: a numpy Data array
+    :return affine (optional): image affine
+    :return head (optional): image header information
     """
     img = nibabel.load(filename)
     data = img.get_data()
@@ -65,11 +64,10 @@ def load_nifty_volume_as_array(filename, with_header = False):
 def save_array_as_nifty_volume(data, filename, reference_name = None):
     """
     save a numpy array as nifty image
-    inputs:
-        Data: a numpy array with shape [Depth, Height, Width]
-        filename: the ouput file name
-        reference_name: file name of the reference image of which affine and header are used
-    outputs: None
+    :param Data: a numpy array with shape [Depth, Height, Width]
+    :param filename: the ouput file name
+    :param reference_name: file name of the reference image of which affine and header are used
+    :return:
     """
     img = sitk.GetImageFromArray(data)
     folder_name = os.path.dirname(filename)
@@ -86,12 +84,9 @@ def save_array_as_nifty_volume(data, filename, reference_name = None):
 def itensity_normalize_one_volume(volume):
     """
     normalize the itensity of an nd volume based on the mean and std of nonzeor region
-    inputs:
-        volume: the input nd volume
-    outputs:
-        out: the normalized nd volume
+    :param volume: the input nd volume
+    :return out: the normalized nd volume
     """
-    
     pixels = volume[volume > 0]
     mean = pixels.mean()
     std  = pixels.std()
@@ -100,57 +95,13 @@ def itensity_normalize_one_volume(volume):
     out[volume == 0] = out_random[volume == 0]
     return out
 
-def get_ND_bounding_box(label, margin):
-    """
-    get the bounding box of the non-zero region of an ND volume
-    """
-    input_shape = label.shape
-    if(type(margin) is int ):
-        margin = [margin]*len(input_shape)  # Extend the margin to multi-dimension
-    assert(len(input_shape) == len(margin))
-    indxes = np.nonzero(label)  # Get the location of all non-zero pixels
-    idx_min = []
-    idx_max = []
-    for i in range(len(input_shape)):  # Get the boundary on each dimension
-        idx_min.append(indxes[i].min())
-        idx_max.append(indxes[i].max())
-
-    for i in range(len(input_shape)):  # Extend the region by 5 pixels
-        idx_min[i] = max(idx_min[i] - margin[i], 0)
-        idx_max[i] = min(idx_max[i] + margin[i], input_shape[i] - 1) # index from 0
-    return idx_min, idx_max
-
-def crop_ND_volume_with_bounding_box(volume, min_idx, max_idx):
-    """
-    crop/extract a subregion form an nd image.
-    """
-    dim = len(volume.shape)
-    assert(dim >= 2 and dim <= 5)  # only deal with 2,3,4 dimensions
-    if(dim == 2):
-        output = volume[np.ix_(range(min_idx[0], max_idx[0] + 1),
-                               range(min_idx[1], max_idx[1] + 1))]
-    elif(dim == 3):
-        output = volume[np.ix_(range(min_idx[0], max_idx[0] + 1),
-                               range(min_idx[1], max_idx[1] + 1),
-                               range(min_idx[2], max_idx[2] + 1))]
-    elif(dim == 4):
-        output = volume[np.ix_(range(min_idx[0], max_idx[0] + 1),
-                               range(min_idx[1], max_idx[1] + 1),
-                               range(min_idx[2], max_idx[2] + 1),
-                               range(min_idx[3], max_idx[3] + 1))]
-    elif(dim == 5):
-        output = volume[np.ix_(range(min_idx[0], max_idx[0] + 1),
-                               range(min_idx[1], max_idx[1] + 1),
-                               range(min_idx[2], max_idx[2] + 1),
-                               range(min_idx[3], max_idx[3] + 1),
-                               range(min_idx[4], max_idx[4] + 1))]
-    else:
-        raise ValueError("the dimension number shoud be 2 to 5")
-    return output  # Return cropped volume from in the box
-
-def set_ND_volume_roi_with_bounding_box_range(volume, bb_min, bb_max, sub_volume):
+def set_crop_to_volume(volume, bb_min, bb_max, sub_volume):
     """
     set a subregion to an nd image.
+    :param volume: volume image
+    :param bb_min: box region minimum
+    :param bb_max: box region maximum
+    :
     """
     dim = len(bb_min)
     out = volume
@@ -170,56 +121,18 @@ def set_ND_volume_roi_with_bounding_box_range(volume, bb_min, bb_max, sub_volume
         raise ValueError("array dimension should be 2, 3 or 4")
     return out
 
-def convert_label(in_volume, label_convert_source, label_convert_target):
-    """
-    convert the label value in a volume
-    inputs:
-        in_volume: input nd volume with label set label_convert_source
-        label_convert_source: a list of integers denoting input labels, e.g., [0, 1, 2, 4]
-        label_convert_target: a list of integers denoting output labels, e.g.,[0, 1, 2, 3]
-    outputs:
-        out_volume: the output nd volume with label set label_convert_target
-    """
-    mask_volume = np.zeros_like(in_volume)
-    convert_volume = np.zeros_like(in_volume)
-    for i in range(len(label_convert_source)):
-        source_lab = label_convert_source[i]
-        target_lab = label_convert_target[i]
-        if(source_lab != target_lab):
-            temp_source = np.asarray(in_volume == source_lab)
-            temp_target = target_lab * temp_source
-            mask_volume = mask_volume + temp_source
-            convert_volume = convert_volume + temp_target
-    out_volume = in_volume * 1
-    out_volume[mask_volume>0] = convert_volume[mask_volume>0]  # Only change value that changed
-    return out_volume
         
-def get_random_roi_sampling_center(input_shape, output_shape, sample_mode, bounding_box = None):
+def get_random_crop_center(input_shape, output_shape):
     """
-    get a random coordinate representing the center of a roi for sampling
-    inputs:
-        input_shape: the shape of sampled volume
-        output_shape: the desired roi shape
-        sample_mode: 'valid': the entire roi should be inside the input volume
-                     'full': only the roi centre should be inside the input volume
-        bounding_box: the bounding box which the roi center should be limited to
-    outputs:
-        center: the output center coordinate of a roi
+    get a random coordinate representing the center of a cropped volume
+    :param input_shape: the shape of sampled volume
+    :param output_shape: the desired crop shape
+    :param center: the output center coordinate of a crop
     """
     center = []
     for i in range(len(input_shape)):
-        if(sample_mode[i] == 'full'):
-            if(bounding_box):
-                x0 = bounding_box[i*2]; x1 = bounding_box[i*2 + 1]
-            else:
-                x0 = 0; x1 = input_shape[i]
-        else:
-            if(bounding_box):
-                x0 = bounding_box[i*2] + int(output_shape[i]/2)   
-                x1 = bounding_box[i*2+1] - int(output_shape[i]/2)   
-            else:
-                x0 = int(output_shape[i]/2)   
-                x1 = input_shape[i] - x0
+        x0 = int(output_shape[i]/2)
+        x1 = input_shape[i] - x0
         if(x1 <= x0):
             centeri = int((x0 + x1)/2)
         else:
@@ -268,71 +181,14 @@ def transpose_volumes_reverse(volume, slice_direction):
         tr_volumes = volume
     return tr_volumes
 
-
-
-def resize_ND_volume_to_given_shape(volume, out_shape, order = 3):
+def crop_from_volume(volume, in_center, output_shape, fill = 'random'):
     """
-    resize an nd volume to a given shape
-    inputs:
-        volume: the input nd volume, an nd array
-        out_shape: the desired output shape, a list
-        order: the order of interpolation
-    outputs:
-        out_volume: the reized nd volume with given shape
-    """
-    shape0=volume.shape
-    assert(len(shape0) == len(out_shape))
-    scale = [(out_shape[i] + 0.0)/shape0[i] for i in range(len(shape0))]
-    out_volume = ndimage.interpolation.zoom(volume, scale, order = order)
-    return out_volume
-
-def resize_ND_thin_mask_to_given_shape(in_volume, out_shape):
-    """
-    Resize thin segMemb without distortion
-    inputs:
-        in_volume: input Data segMemb
-        out_shape: target segMemb shape
-    outputs:
-        out_volume: resized segMemb
-    """
-    shape0 = in_volume.shape
-    out_volume = np.zeros(out_shape)
-    assert(len(shape0) == len(out_shape))
-
-    # Get white pixels idx after resize
-    scale = [(out_shape[i] + 0.0)/shape0[i] for i in range(len(shape0))]
-    [s_idxes, r_idxes, z_idxes] = np.nonzero(in_volume)
-    s_resized_idxes = np.floor(s_idxes * scale[0]).astype(int)
-    s_resized_idxes[s_resized_idxes < 0] = 0
-    s_resized_idxes[s_resized_idxes > out_shape[0]-1] = out_shape[0] - 1
-
-    r_resized_idxes = np.floor(r_idxes * scale[1]).astype(int)
-    r_resized_idxes[r_resized_idxes < 0] = 0
-    r_resized_idxes[r_resized_idxes > out_shape[1]-1] = out_shape[1] - 1
-
-    z_resized_idxes = np.floor(z_idxes * scale[2]).astype(int)
-    z_resized_idxes[z_resized_idxes < 0] = 0
-    z_resized_idxes[z_resized_idxes > out_shape[2]-1] = out_shape[2] - 1
-
-    # Use linear index for speed
-    linex = np.ravel_multi_index(np.vstack((s_resized_idxes, r_resized_idxes, z_resized_idxes)), out_shape)
-    flatted_volcume = out_volume.flatten()
-    flatted_volcume[linex] = 1
-    out_volume = np.reshape(flatted_volcume, out_shape)
-
-    return out_volume
-
-
-def extract_roi_from_volume(volume, in_center, output_shape, fill = 'random'):
-    """
-    extract a roi from a 3d volume
-    inputs:
-        volume: the input 3D volume
-        in_center: the center of the roi
-        output_shape: the size of the roi
-        fill: 'random' or 'zero', the mode to fill roi region where is outside of the input volume
-    outputs:
-        output: the roi volume
+    crop from a 3d volume
+    :param volume: the input 3D volume
+    :param in_center: the center of the crop
+    :param output_shape: the size of the crop
+    :param fill: 'random' or 'zero', the mode to fill crop region where is outside of the input volume
+    :param output: the crop volume
     """
     input_shape = volume.shape   
     if(fill == 'random'):
@@ -355,15 +211,13 @@ def extract_roi_from_volume(volume, in_center, output_shape, fill = 'random'):
                       range(in_center[2] - r0[2], in_center[2] + r1[2]))]
     return output
 
-def set_roi_to_volume(volume, center, sub_volume):
+def merge_crop_to_volume(volume, center, sub_volume):
     """
-    set the content of an roi of a 3d/4d volume to a sub volume
-    inputs:
-        volume: the input 3D/4D volume
-        center: the center of the roi
-        sub_volume: the content of sub volume
-    outputs:
-        output_volume: the output 3D/4D volume
+    merge the content of a crop to a 3d volume to a sub volume
+    :param volume: the input 3D/4D volume
+    :param center: the center of the crop
+    :param sub_volume: the content of sub volume
+    :param output_volume: the output 3D/4D volume
     """
     volume_shape = volume.shape   
     patch_shape = sub_volume.shape
@@ -395,112 +249,15 @@ def set_roi_to_volume(volume, center, sub_volume):
                               range(patch_center[3] - r0[3], patch_center[3] + r1[3]))]
     else:
         raise ValueError("array dimension should be 3 or 4")        
-    return output_volume  
-
-def get_largest_two_component(img, print_info = False, threshold = None):
-    """
-    Get the largest two components of a binary volume
-    inputs:
-        img: the input 3D volume
-        threshold: a size threshold
-    outputs:
-        out_img: the output volume 
-    """
-    s = ndimage.generate_binary_structure(3,2) # iterate structure
-    labeled_array, numpatches = ndimage.label(img,s) # labeling
-    sizes = ndimage.sum(img,labeled_array,range(1,numpatches+1)) 
-    sizes_list = [sizes[i] for i in range(len(sizes))]
-    sizes_list.sort()
-    if(print_info):
-        print('component size', sizes_list)
-    if(len(sizes) == 1):
-        out_img = img
-    else:
-        if(threshold):
-            out_img = np.zeros_like(img)
-            for temp_size in sizes_list:
-                if(temp_size > threshold):
-                    temp_lab = np.where(sizes == temp_size)[0] + 1
-                    temp_cmp = labeled_array == temp_lab
-                    out_img = (out_img + temp_cmp) > 0
-            return out_img
-        else:    
-            max_size1 = sizes_list[-1]
-            max_size2 = sizes_list[-2]
-            max_label1 = np.where(sizes == max_size1)[0] + 1
-            max_label2 = np.where(sizes == max_size2)[0] + 1
-            component1 = labeled_array == max_label1
-            component2 = labeled_array == max_label2
-            if(max_size2*10 > max_size1):
-                component1 = (component1 + component2) > 0
-            out_img = component1
-    return out_img
-
-def fill_holes(img):
-    """
-    filling small holes of a binary volume with morphological operations
-    """
-    neg = 1 - img
-    s = ndimage.generate_binary_structure(3,1) # iterate structure
-    labeled_array, numpatches = ndimage.label(neg,s) # labeling
-    sizes = ndimage.sum(neg,labeled_array,range(1,numpatches+1)) 
-    sizes_list = [sizes[i] for i in range(len(sizes))]
-    sizes_list.sort()
-    max_size = sizes_list[-1]
-    max_label = np.where(sizes == max_size)[0] + 1
-    component = labeled_array == max_label
-    return 1 - component
-
-
-def remove_external_core(lab_main, lab_ext):
-    """
-    remove the core region that is outside of whole tumor
-    """
-    
-    # for each component of lab_ext, compute the overlap with lab_main
-    s = ndimage.generate_binary_structure(3,2) # iterate structure
-    labeled_array, numpatches = ndimage.label(lab_ext,s) # labeling
-    sizes = ndimage.sum(lab_ext,labeled_array,range(1,numpatches+1)) 
-    sizes_list = [sizes[i] for i in range(len(sizes))]
-    new_lab_ext = np.zeros_like(lab_ext)
-    for i in range(len(sizes)):
-        sizei = sizes_list[i]
-        labeli =  np.where(sizes == sizei)[0] + 1
-        componenti = labeled_array == labeli
-        overlap = componenti * lab_main
-        if((overlap.sum()+ 0.0)/sizei >= 0.5):
-            new_lab_ext = np.maximum(new_lab_ext, componenti)
-    return new_lab_ext
-
-def binary_dice3d(s,g):
-    """
-    dice score of 3d binary volumes
-    inputs: 
-        s: segmentation volume
-        g: ground truth volume
-    outputs:
-        dice: the dice score
-    """
-    assert(len(s.shape)==3)
-    [Ds, Hs, Ws] = s.shape
-    [Dg, Hg, Wg] = g.shape
-    assert(Ds==Dg and Hs==Hg and Ws==Wg)
-    prod = np.multiply(s, g)
-    s0 = prod.sum()
-    s1 = s.sum()
-    s2 = g.sum()
-    dice = (2.0*s0 + 1e-10)/(s1 + s2 + 1e-10)
-    return dice
+    return output_volume
 
 
 def discrete_transform(continuous_img, non_linear = True, num_samples = 16):
     """
     Discretization on continous image.
-    Input:
-        continuous_img: RawMemb image with continous value on pixel
-        num_samples: the number of discretization
-    Return:
-        discrete_img: discreted image
+    :param continuous_img: RawMemb image with continous value on pixel
+    :param num_samples: the number of discretization
+    :param discrete_img: discreted image
     """
     if non_linear:
         continuous_img  = np.exp(continuous_img)
@@ -516,11 +273,8 @@ def discrete_transform(continuous_img, non_linear = True, num_samples = 16):
 def binary_to_EDT_3D(binary_image, valid_edt_width, discrete_num_bins = 0):
     """
     Transform binary 3D segMemb into distance transform segMemb.
-    inputs:
-        binary_image: 3D bin
-    outputs:
-        EDT_image: distance transoformation of the image
-
+    :param binary_image: 3D bin
+    :param EDT_image: distance transoformation of the image
     """
     assert len(binary_image.shape)==3, 'Input for EDT shoulb be 3D volume'
     if (discrete_num_bins==2):
@@ -541,11 +295,8 @@ def binary_to_EDT_3D(binary_image, valid_edt_width, discrete_num_bins = 0):
 def post_process_on_edt(edt_image):
     """
     Threshold the distance map and get the presegmentation results
-    Input:
-        edt_image: distance map from EDT or net prediction
-        edt_threshold: threshold value
-    Output:
-        threshold_segmentation: result after threshold
+    :param edt_image: distance map from EDT or net prediction
+    :param final_seg: result after threshold
     """
     max_in_map = np.max(edt_image)
     assert max_in_map, 'Given threshold should be smaller the maximum in EDT'
@@ -560,8 +311,9 @@ def post_process_on_edt(edt_image):
     return final_seg
 
 def delete_isolate_labels(discrete_edt):
-
-    # delete all unconnected binary segMemb
+    '''
+    delete all unconnected binary segMemb
+    '''
     label_structure = np.ones((3, 3, 3))
     [labelled_edt, _]= ndimage.label(discrete_edt, label_structure)
 

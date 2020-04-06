@@ -29,7 +29,7 @@ def run_shape_analysis(config):
     Extract the cell tree structure from the aceTree file
     :param acetree_file:  file name of the embryo acetree file
     :param max_time:  the maximum time point in the tree.
-    :return cell tree structure:
+    :return :
     '''
     global max_time
     global cell_tree
@@ -92,11 +92,10 @@ def cell_graph_network(config):
     '''
     Used to construct the contact relationship at one specific time point. The vertex represents the cell, and there is
     a edge whenever two segCell contact with each other.
-    :param time_point: the time point which is to be analyzed
-    :return cell_network: cell network graph
+    :param config: parameter configs
+    :return :
     '''
     time_point = config['time_point']
-    # try:
     seg_file = os.path.join(config['seg_folder'], config['embryo_name'], config['embryo_name']+"_"+str(time_point).zfill(3)+'_segCell.nii.gz')
     nucleus_loc_file = os.path.join('./ShapeUtil/TemCellGraph', config['embryo_name'], config['embryo_name']+"_"+str(time_point).zfill(3)+'_nucLoc'+'.txt')  # read nucleus location Data
 
@@ -135,9 +134,12 @@ def cell_graph_network(config):
 def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
     '''
     Use acetree nucleus information to unify the segmentation labels in the membrane segmentations.
-    :param seg: initial membrane segmentation
-    :param nucleus_info:  nucleus location information from aceTree
-    :return:
+    :param file_lock: file locker to control parallel computing
+    :param time_point: time point of the volume
+    :param seg_file: cell segmentation file
+    :param config: parameter configs
+    :return unify_seg: cell segmentation with labels unified
+    :return nuc_positions: nucleus positions with labels
     '''
     with open('./ShapeUtil/number_dictionary.txt', 'rb') as f:
         number_dict = pickle.load(f)
@@ -268,7 +270,7 @@ def add_relation(point_graph, division_seg):
     Add relationship information between segCell. (contact surface area)
     :param point_graph: point graph of segCell
     :param division_seg: cell segmentations
-    :return:
+    :return point_graph: contact graph between cells
     '''
     #  use translation on pixel on three directions to get the the contact area
     with open('./ShapeUtil/name_dictionary.txt', 'rb') as f:
@@ -312,7 +314,7 @@ def construct_stat_embryo(cell_tree, max_time):
     Construct embryonic statistical DataFrom
     :param cell_tree: cell lineage tree used in the analysis
     :param max_time: the maximum time point we analyze.
-    :return stat_embryo: updated global variable stat_embryo
+    :return:
     '''
     global stat_embryo
 
@@ -344,7 +346,8 @@ def construct_stat_embryo(cell_tree, max_time):
 def assemble_result(point_embryo, time_point, number_dict):
     '''
     Assemble results of the embryo at different time points into a single DataFrame in Pandas
-    :parameter point_embryo: embryo information at one time point
+    :param point_embryo: embryo information at one time point
+    :param time_point: time point of the embryo
     :return st_embryo: statistical shape information. Checked through cell_name1, cell_name2, time.
     '''
     global stat_embryo
@@ -381,9 +384,12 @@ def assemble_result(point_embryo, time_point, number_dict):
 def get_mother_loc(cell_tree, mother_name, loc):
     '''
     Get mother nucleus location based on children's location
-    :param cell_tree:
-    :param mother_name:
-    :return:
+    :param cell_tree: cell nucleus lineage
+    :param mother_name: mother cell name
+    :param loc: daughter's location
+    :return mother_loc: mother's location
+    :return children_name1: first child's name
+    :return children_name2: second child's name
     '''
     try:
         children1, children2 = cell_tree.children(mother_name)
@@ -401,8 +407,8 @@ def get_mother_loc(cell_tree, mother_name, loc):
 def get_surface_area(cell_mask):
     '''
     get cell surface area
-    :param cell_mask:
-    :return:
+    :param cell_mask: single cell mask
+    :return surface_are: cell's surface are
     '''
     ball_structure = morphology.ball(1)
     dilated_mask = ndimage.binary_dilation(cell_mask, ball_structure, iterations=1)
@@ -412,6 +418,15 @@ def get_surface_area(cell_mask):
 
 
 def update_time_tree(embryo_name, cell_name, time_point, file_lock, add=False):
+    '''
+    Update cell lineage tree. Such as two nuclei in dividing cell are merged into one.
+    :param embryo_name: embryo's name
+    :param cell_name: cell's name
+    :param time_point: time point of the embryo
+    :param file_lock: file locker for parallel computing
+    :param add: add or remove one cell in the lineage
+    :return:
+    '''
     file_lock.acquire()
     try:
         with open("./ResultCell/test_embryo_robust/statShape/{}_time_tree.txt".format(embryo_name), 'rb') as f:
@@ -431,6 +446,14 @@ def update_time_tree(embryo_name, cell_name, time_point, file_lock, add=False):
 
 
 def update_daughter_info(nucleus_loc_info, ch1, ch2, mother):
+    '''
+    add notes to the nucleus loc file.
+    :param nucleus_loc_info: nucleus location including notes
+    :param ch1: first child's name
+    :param ch2: second child's name
+    :param mother: mother's name
+    :return nucleus_loc_info: updated nucleus info
+    '''
     nucleus_loc_info.loc[nucleus_loc_info.nucleus_name == ch1, ["note", "volume", "surface"]] = ["child_of_{}".format(mother), '', '']
     nucleus_loc_info.loc[nucleus_loc_info.nucleus_name == ch2, ["note", "volume", "surface"]] = ["child_of_{}".format(mother), '', '']
 
@@ -438,7 +461,9 @@ def update_daughter_info(nucleus_loc_info, ch1, ch2, mother):
 
 
 if __name__ == '__main__':
-
+    '''
+    argv[1]: the config file
+    '''
     config_file = str(sys.argv[1])
     assert (os.path.isfile(config_file))
     config = parse_config(config_file)

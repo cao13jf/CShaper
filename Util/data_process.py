@@ -272,7 +272,7 @@ def discrete_transform(continuous_img, non_linear = True, num_samples = 16):
 
 def binary_to_EDT_3D(binary_image, valid_edt_width, discrete_num_bins = 0):
     """
-    Transform binary 3D segMemb into distance transform segMemb.
+    Transform binary 3D SegMemb into distance transform SegMemb.
     :param binary_image: 3D bin
     :param EDT_image: distance transoformation of the image
     """
@@ -281,7 +281,7 @@ def binary_to_EDT_3D(binary_image, valid_edt_width, discrete_num_bins = 0):
         return binary_image
     edt_image = ndimage.distance_transform_edt(binary_image==0)
 
-    # Cut out two large EDT far away from the binary segMemb
+    # Cut out two large EDT far away from the binary SegMemb
     original_max_edt = np.max(edt_image)
     target_max_edt = min(original_max_edt, valid_edt_width)  # Change valid if given is too lagre
     valid_revised_edt = np.maximum(target_max_edt - edt_image, 0) / target_max_edt
@@ -312,7 +312,7 @@ def post_process_on_edt(edt_image):
 
 def delete_isolate_labels(discrete_edt):
     '''
-    delete all unconnected binary segMemb
+    delete all unconnected binary SegMemb
     '''
     label_structure = np.ones((3, 3, 3))
     [labelled_edt, _]= ndimage.label(discrete_edt, label_structure)
@@ -339,7 +339,7 @@ def delete_isolate_labels(discrete_edt):
 def save_numpy_as_json(np_data, save_file, surface_only = True):
     """
     Save python numpy Data as json for web GUI
-    :param np_data: numpy variable (should be cell segMemb embedded with embryo)
+    :param np_data: numpy variable (should be cell SegMemb embedded with embryo)
     :param save_file: save file name
     :param surface_only: whether exact the surface first and save surface points as json file
     :return:
@@ -355,8 +355,8 @@ def save_numpy_as_json(np_data, save_file, surface_only = True):
 
 def get_cell_surface_mask(cell_volume):
     """
-    Extract cell surface segMemb from the volume segmentation
-    :param cell_volume: cell volume segMemb with the membrane embedded
+    Extract cell surface SegMemb from the volume segmentation
+    :param cell_volume: cell volume SegMemb with the membrane embedded
     :return cell_surface: cell surface with only surface pixels
     """
     cell_mask = cell_volume == 0

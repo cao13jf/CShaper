@@ -20,7 +20,7 @@ Colors=['red','red', 'red', 'blue','blue','blue']
 t_max = 150
 nucleus_folder = "./ResultCell/NucleusLoc"
 # get all embryos names
-embryos =[os.path.join(nucleus_folder, embryo_name) for embryo_name in ["170704plc1p1"]]
+embryos =[os.path.join(nucleus_folder, embryo_name) for embryo_name in ["200314plc1p1", "181210plc1p3"]]
 
 with open("./ShapeUtil/number_dictionary.txt", "rb") as f:
     number_dict = pickle.load(f)
@@ -89,8 +89,8 @@ contact_all.to_csv("test_all_contact.csv")
 #         pd_loc = pd.read_csv(nucleus_loc_file)
 #         cell_volume_surface = pd_loc[["nucleus_name", "volume", "surface"]]
 #         cell_volume_surface = cell_volume_surface.set_index("nucleus_name")
-#         volume_lists.append(cell_volume_surface["volume"].to_frame().T.fillna(0))
-#         surface_lists.append(cell_volume_surface["surface"].to_frame().T.fillna(0))
+#         volume_lists.append(cell_volume_surface["volume"].to_frame().T.dropna(axis=1))
+#         surface_lists.append(cell_volume_surface["surface"].to_frame().T.dropna(axis=1))
 #     volume_stat = pd.concat(volume_lists, keys=range(1, t_max+1), ignore_index=True, axis=0, sort=False, join="outer")
 #     surface_stat = pd.concat(surface_lists, keys=range(1, t_max+1), ignore_index=True, axis=0, sort=False, join="outer")
 #     volume_stat.to_csv(os.path.join("./ShapeUtil/RobustStat", embryo.split('/')[-1] + "_volume"+'.csv'))
@@ -111,6 +111,7 @@ ratio_surfaces = []
 ratio_volumes = []
 embryo_names = []
 times = []
+cells = []
 for surface_file, volume_file in zip(surfaces, volumes):
     plt.clf()
     embryo_name = volume_file.split('/')[-1].split('_')[0]
@@ -123,25 +124,28 @@ for surface_file, volume_file in zip(surfaces, volumes):
     ratio_surfaces = ratio_surfaces + ratio_surface.tolist()
     ratio_volumes = ratio_volumes + ratio_volume.tolist()
     embryo_names = embryo_names + [embryo_name]*ratio_volume.shape[0]
-    time = volume.apply(pd.DataFrame.first_valid_index, axis=0)
-    times = times + time.tolist()
-# get common segCell
+    time_first = volume.apply(pd.DataFrame.first_valid_index, axis=0) + 1
+    time_last = volume.apply(pd.DataFrame.last_valid_index, axis=0) + 1
+
+    times = times +((time_first + time_last)/2).tolist()
+    cells = cells + time_last.index.tolist()
+# get common SegCell
 # cell_name_collections = ratio_volumes[0].index
 # for ratio_volume in ratio_volumes:
 #     cell_name_collections = list(set(cell_name_collections) & set(ratio_volume.index))
 # volumes with common cell names in different embryo
-combine_volume_consistency = pd.DataFrame({"volume_ratio":ratio_volumes, "start_time": times, "embryo_name":embryo_names}).dropna()
+combine_volume_consistency = pd.DataFrame({"embryo_name":embryo_names, "cell_name":cells, "volume_ratio":ratio_volumes, "start_time": times, }).dropna()
 combine_volume_consistency.to_csv("./ShapeUtil/RobustStat/volume_consitency.csv", index=False)
 
-h = sns.jointplot(x="volume_ratio", y="start_time",
-                  Data=combine_volume_consistency,
-                  xlim=(0, 5),
-                  ylim=(0, 160),
-                  s=5)
-h.ax_joint.set_xlabel(r'Volume consistency coefficient $\rho_c$',)
-h.ax_joint.set_ylabel(r'Time points $\rho_t$',)
-plt.savefig(os.path.join("./RobustStat", "volume_all_density.jpeg"), dpi=600)
+# h = sns.jointplot(x="volume_ratio", y="start_time",
+#                   Data=combine_volume_consistency,
+#                   xlim=(0, 5),
+#                   ylim=(0, 160),
+#                   s=5)
+# h.ax_joint.set_xlabel(r'Volume consistency coefficient $\rho_c$',)
+# h.ax_joint.set_ylabel(r'Time points $\rho_t$',)
+# plt.savefig(os.path.join("./RobustStat", "volume_all_density.jpeg"), dpi=600)
 
 ####################################################
-# detect the distribution of segCell with large deviation
+# detect the distribution of SegCell with large deviation
 #######################################################

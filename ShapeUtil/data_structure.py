@@ -36,7 +36,7 @@ def construct_celltree(nucleus_file, config):
     cell_tree.create_node('E', 'E', parent='EMS')
     cell_tree.create_node('MS', 'MS', parent='EMS')
 
-    # Read the name excel and construct the tree with complete segCell
+    # Read the name excel and construct the tree with complete SegCell
     df_time = pd.read_csv(nucleus_file)
 
     # read and combine all names from different acetrees

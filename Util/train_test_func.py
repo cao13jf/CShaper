@@ -98,7 +98,7 @@ def prediction_fusion(prob_sagittal, prob_axial):
     bin_prob0 = smoothed_largest < 0.5
     [idx, idy, idz] = np.nonzero(bin_prob0)
 
-    # Hard fusion embedded with segMemb
+    # Hard fusion embedded with SegMemb
     pred_axial = np.argmax(prob_axial, axis=-1).astype(np.uint16)
     pred_sagittal = np.argmax(prob_sagittal, axis=-1).astype(np.int16)
     pred_fused = np.copy(pred_sagittal)

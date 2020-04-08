@@ -36,7 +36,7 @@ def train(config_file):
     #               1, Load configuration parameters
     #=============================================================
     config = parse_config(config_file)
-    config_data = config['Data']
+    config_data = config['data']
     config_net = config['network']
     config_train = config['training']
     random.seed(config_train.get('random_seed', 1))

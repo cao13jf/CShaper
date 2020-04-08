@@ -148,7 +148,7 @@ def test(config_file):
 
 
     # ==============================================================
-    #               Post processing (binary membrane --> isolated segCell)
+    #               Post processing (binary membrane --> isolated SegCell)
     # ==============================================================
     if config_test.get('post_process', False):
         config_post = {}

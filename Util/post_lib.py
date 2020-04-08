@@ -66,7 +66,7 @@ def construct_weighted_graph(bin_image, local_max_h = 2):
     bin_memb = bin_cell == 0
     bin_cell_edt = ndimage.morphology.distance_transform_edt(bin_cell)
 
-    # get local maximum segMemb
+    # get local maximum SegMemb
     local_maxima_mask = h_maxima(bin_cell_edt, local_max_h)
     [maxima_x, maxima_y, maxima_z] = np.nonzero(local_maxima_mask)
     #  find boundary points to force large weight
@@ -209,7 +209,7 @@ def put_volume_constrain(segmentations, volume_limits):
 
 def find_inside_volume_mask(ma_mask, volume, label_mask):
     '''
-    Volume segMemb
+    Volume SegMemb
     :param ma_mask:
     :param volume:
     :return:

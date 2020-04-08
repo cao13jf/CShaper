@@ -91,7 +91,7 @@ def run_shape_analysis(config):
 def cell_graph_network(config):
     '''
     Used to construct the contact relationship at one specific time point. The vertex represents the cell, and there is
-    a edge whenever two segCell contact with each other.
+    a edge whenever two SegCell contact with each other.
     :param config: parameter configs
     :return :
     '''
@@ -122,7 +122,7 @@ def cell_graph_network(config):
     for label in all_labels:
         cell_name = name_dict[label]
         point_graph.add_node(cell_name, pos=nucleus_loc[nucleus_loc.nucleus_name==cell_name].iloc[:, 2:5].values[0].tolist())
-    #  add connections between segCell (edge and edge weight)
+    #  add connections between SegCell (edge and edge weight)
 
     relation_graph = add_relation(point_graph, division_seg)
 
@@ -179,7 +179,7 @@ def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
     nucleus_loc_to_save["note"] = "" ################### Used for wrting cell information
     for i, nucleus_loc in enumerate(list(nucleus_location_zoom)):
         target_label = nucleus_number[i]
-        if "Nuc" in nucleus_names[i]:  # ignore all segCell starting with "Nuc****"
+        if "Nuc" in nucleus_names[i]:  # ignore all SegCell starting with "Nuc****"
             nucleus_loc_to_save.loc[nucleus_loc_to_save.nucleus_label == target_label, "note"] = "lost_hole"
             update_time_tree(config['embryo_name'], name_dict[target_label], time_point, file_lock, add=False)
             continue
@@ -215,7 +215,7 @@ def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
                         surface_area = get_surface_area(seg == raw_label)
                         nucleus_loc_to_save.loc[nucleus_loc_to_save.nucleus_label == mother_label, "volume"] = (seg == raw_label).sum()
                         nucleus_loc_to_save.loc[nucleus_loc_to_save.nucleus_label == mother_label, "surface"] = surface_area
-                        # update daughter segCell information
+                        # update daughter SegCell information
                         nucleus_loc_to_save = update_daughter_info(nucleus_loc_to_save, ch1, ch2, mother_name)
                         update_time_tree(config['embryo_name'], mother_name, time_point, file_lock, add=True)
                         update_time_tree(config['embryo_name'], ch1, time_point, file_lock, add=False)
@@ -239,7 +239,7 @@ def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
     with open(save_name_fast_read, 'wb') as f:
         pickle.dump(nucleus_loc_to_save, f)
 
-    ##  deal with dividing segCell
+    ##  deal with dividing SegCell
     raw_labels = list(seg[nucleus_location_zoom[:, 0], nucleus_location_zoom[:, 1], nucleus_location_zoom[:, 2]])
     repeat_labels = [[i, label] for i, label in enumerate(raw_labels) if raw_labels.count(label) > 1]
     repeat_labels = [x for x in repeat_labels if x[1]!=0]  # Label with 0 is the missed cell #TODO
@@ -267,8 +267,8 @@ def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
 
 def add_relation(point_graph, division_seg):
     '''
-    Add relationship information between segCell. (contact surface area)
-    :param point_graph: point graph of segCell
+    Add relationship information between SegCell. (contact surface area)
+    :param point_graph: point graph of SegCell
     :param division_seg: cell segmentations
     :return point_graph: contact graph between cells
     '''
@@ -287,7 +287,7 @@ def get_contact_area(volume):
     Get the contact volume surface of the segmentation. The segmentation results should be watershed segmentation results
     with a ***watershed line***.
     :param volume: segmentation result
-    :return boundary_elements_uni: pairs of segCell which contacts with each other
+    :return boundary_elements_uni: pairs of SegCell which contacts with each other
     :return contact_area: the contact surface area corresponding to that in the the boundary_elements.
     '''
 
@@ -410,9 +410,9 @@ def get_surface_area(cell_mask):
     :param cell_mask: single cell mask
     :return surface_are: cell's surface are
     '''
-    ball_structure = morphology.ball(1)
-    dilated_mask = ndimage.binary_dilation(cell_mask, ball_structure, iterations=1)
-    surface_area = np.logical_and(dilated_mask, ~cell_mask).sum()
+    ball_structure = morphology.cube(3) # TODO
+    erased_mask = ndimage.binary_erosion(cell_mask, ball_structure, iterations=1)
+    surface_area = np.logical_and(~erased_mask, cell_mask).sum()
 
     return surface_area
 

@@ -37,4 +37,4 @@ maximal_iteration  = 5000
 snapshot_iteration = 500
 test_iteration     = 40
 test_step          = 5
-model_save_prefix  = ./ModelCell/DMapNet_PUB
+model_save_prefix  = ./ModelCell/DMapNet

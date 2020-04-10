@@ -55,7 +55,6 @@ def weighted_one_hot_loss(pred0, ylabel, output_channels, weight=None, ss=None):
 
     crossEntropyScaling = tf.to_float([0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5])
     #crossEntropyScaling = tf.to_float([0.9, 1.0])
-    # TODO: loss may also be weighted by "classes distance", 1<->3 is closer then 1<->10.
     crossEntropy = -tf.reduce_sum(((1 - gt) * tf.log(tf.maximum(1 - predSoftmax, epsilon))
                                    + gt * tf.log(tf.maximum(predSoftmax, epsilon))) * weight * crossEntropyScaling,
                                   reduction_indices=[1])  # Final result should be in a row

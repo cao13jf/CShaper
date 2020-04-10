@@ -17,10 +17,10 @@ Colors=['red','red', 'red', 'blue','blue','blue']
 # # [155]: 200314plc1p2
 # # [150]: 200314plc1p1, 181210plc1p3
 
-t_max = 150
+t_max = 200
 nucleus_folder = "./ResultCell/NucleusLoc"
 # get all embryos names
-embryos =[os.path.join(nucleus_folder, embryo_name) for embryo_name in ["200314plc1p1", "181210plc1p3"]]
+embryos =[os.path.join(nucleus_folder, embryo_name) for embryo_name in ["170704plc1p1"]]
 
 with open("./ShapeUtil/number_dictionary.txt", "rb") as f:
     number_dict = pickle.load(f)
@@ -78,23 +78,23 @@ contact_all.to_csv("test_all_contact.csv")
 # combine all volume and surface information
 ####################################
 
-# for embryo in embryos:
-#     # combien all volume and surface informace
-#     volume_stat = pd.DataFrame([], columns=[], dtype=np.float32)
-#     surface_stat = pd.DataFrame([], columns=[], dtype=np.float32)
-#     volume_lists = []
-#     surface_lists = []
-#     for t in tqdm(range(1, t_max + 1), desc="Processing {}".format(embryo.split('/')[-1])):
-#         nucleus_loc_file = os.path.join(embryo, os.path.basename(embryo)+"_"+str(t).zfill(3)+"_nucLoc"+".csv")
-#         pd_loc = pd.read_csv(nucleus_loc_file)
-#         cell_volume_surface = pd_loc[["nucleus_name", "volume", "surface"]]
-#         cell_volume_surface = cell_volume_surface.set_index("nucleus_name")
-#         volume_lists.append(cell_volume_surface["volume"].to_frame().T.dropna(axis=1))
-#         surface_lists.append(cell_volume_surface["surface"].to_frame().T.dropna(axis=1))
-#     volume_stat = pd.concat(volume_lists, keys=range(1, t_max+1), ignore_index=True, axis=0, sort=False, join="outer")
-#     surface_stat = pd.concat(surface_lists, keys=range(1, t_max+1), ignore_index=True, axis=0, sort=False, join="outer")
-#     volume_stat.to_csv(os.path.join("./ShapeUtil/RobustStat", embryo.split('/')[-1] + "_volume"+'.csv'))
-#     surface_stat.to_csv(os.path.join("./ShapeUtil/RobustStat", embryo.split('/')[-1] + "_surface"+'.csv'))
+for embryo in embryos:
+    # combien all volume and surface informace
+    volume_stat = pd.DataFrame([], columns=[], dtype=np.float32)
+    surface_stat = pd.DataFrame([], columns=[], dtype=np.float32)
+    volume_lists = []
+    surface_lists = []
+    for t in tqdm(range(1, t_max + 1), desc="Processing {}".format(embryo.split('/')[-1])):
+        nucleus_loc_file = os.path.join(embryo, os.path.basename(embryo)+"_"+str(t).zfill(3)+"_nucLoc"+".csv")
+        pd_loc = pd.read_csv(nucleus_loc_file)
+        cell_volume_surface = pd_loc[["nucleus_name", "volume", "surface"]]
+        cell_volume_surface = cell_volume_surface.set_index("nucleus_name")
+        volume_lists.append(cell_volume_surface["volume"].to_frame().T.dropna(axis=1))
+        surface_lists.append(cell_volume_surface["surface"].to_frame().T.dropna(axis=1))
+    volume_stat = pd.concat(volume_lists, keys=range(1, t_max+1), ignore_index=True, axis=0, sort=False, join="outer")
+    surface_stat = pd.concat(surface_lists, keys=range(1, t_max+1), ignore_index=True, axis=0, sort=False, join="outer")
+    volume_stat.to_csv(os.path.join("./ShapeUtil/RobustStat", embryo.split('/')[-1] + "_volume"+'.csv'))
+    surface_stat.to_csv(os.path.join("./ShapeUtil/RobustStat", embryo.split('/')[-1] + "_surface"+'.csv'))
 
 #=================================save for GUI======================
 # for column in volume_stat.columns:

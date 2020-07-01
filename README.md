@@ -1,9 +1,9 @@
 ## CShaper
 
 Implementation for in *Establishment of morphological atlas of Caenorhabditis elegans embryo using deep-learning-based 4D
- segmentation*, by Jianfeng Cao<sup>*</sup>, Guoye Guan<sup>*</sup>, Vincy Wing Sze Ho<sup>*</sup>, Ming-Kin Wong, Lu-Yan Chan, Chao Tang, Zhongying Zhao, & Hong Yan.
+ segmentation*, by Jianfeng Cao*, Guoye Guan*, Vincy Wing Sze Ho*, Ming-Kin Wong, Lu-Yan Chan, Chao Tang, Zhongying Zhao, & Hong Yan.
 
-<sup>*</sup> denotes equal contribution
+\* denotes equal contribution
 
 ### Usage
 This implementation is based on Tensorflow and python3.6, trained with one GPU NVIDIA 2080Ti oon Linux. Steps for training

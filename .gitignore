@@ -18,6 +18,7 @@ ShapeUtil/.ipynb_checkpoints
 ResultCell/
 **.csv
 **.avi
+venv
 
 !./ShapeUtil/*.csv
 !./ShapeUtil/*.txt

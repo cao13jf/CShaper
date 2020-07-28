@@ -48,5 +48,10 @@ into `./Data/MembValidation/`. Example data is also available through previous d
         
       |--Util/: utils for training and testing
     ```
+### Related
+* Project file for CellProfiler involved in evaluation ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_ad_cityu_edu_hk/ETN3Z6j4TklAko6NvQDIujwBwzoixX26EajSOaoeeme2jg?download=1)).
+* Parameter files for RACE ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_ad_cityu_edu_hk/EX_iCNByGBtMlZI7G8bRgSMBqNfaCdAbq3cHDrGc-k6d5Q?download=1)). 
+
+
 ### Acknowledgement
 We thank [brats17](https://github.com/taigw/brats17) which we referred to when implementing the code.

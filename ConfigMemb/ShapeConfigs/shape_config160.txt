@@ -11,9 +11,9 @@ frist_run = False
 # # [155]: 200314plc1p2
 # # [150]: 200314plc1p1, 181210plc1p3
 
-embryo_names = [200113plc1p2]
+embryo_names = [200309plc1p2, 200309plc1p3, 200311plc1p1, 200315plc1p2, 200315plc1p3, 200316plc1p1, 200316plc1p2]
 # The maximum time point used for the referred embryo to construct the cell_tree with specific number of cells.
-max_time = 270
+max_time = 160
 delete_tem_file = False
 seg_folder = ./ResultCell/BinaryMembPostseg
 save_folder = ./ResultCell/StatShape

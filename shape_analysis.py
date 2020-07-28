@@ -6,10 +6,11 @@ from tqdm import tqdm
 from scipy import ndimage
 import multiprocessing as mp
 from skimage import morphology
-from ShapeUtil.draw_lib import *
-from ShapeUtil.data_structure import *
+from skimage.measure import marching_cubes_lewiner, mesh_surface_area
 
 # import user defined library
+from ShapeUtil.draw_lib import *
+from ShapeUtil.data_structure import *
 from Util.post_lib import check_folder_exist
 from Util.parse_config import parse_config
 from Util.segmentation_post_process import save_nii
@@ -242,7 +243,7 @@ def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
     ##  deal with dividing SegCell
     raw_labels = list(seg[nucleus_location_zoom[:, 0], nucleus_location_zoom[:, 1], nucleus_location_zoom[:, 2]])
     repeat_labels = [[i, label] for i, label in enumerate(raw_labels) if raw_labels.count(label) > 1]
-    repeat_labels = [x for x in repeat_labels if x[1]!=0]  # Label with 0 is the missed cell #TODO
+    repeat_labels = [x for x in repeat_labels if x[1] != 0]  # Label with 0 is the missed cell #TODO
     # reset all labels to their parent label
     division_seg = unify_seg.copy()
     cell_locations = [list(x) for x in list(nucleus_location_zoom)]
@@ -304,9 +305,17 @@ def get_contact_area(volume):
         if len(neighbor_labels)==2:
             boundary_elements.append(neighbor_labels)
     boundary_elements_uni = list(np.unique(np.array(boundary_elements), axis=0))
-    contact_area = [boundary_elements.count(list(a)) for a in boundary_elements_uni]
-
-    return boundary_elements_uni, contact_area
+    contact_area = []
+    boundary_elements_uni_new = []
+    for (label1, label2) in boundary_elements_uni:
+        contact_mask = np.logical_and(ndimage.binary_dilation(volume == label1), ndimage.binary_dilation(volume == label2))
+        contact_mask = np.logical_and(contact_mask, boundary_mask)
+        if contact_mask.sum() > 4:
+            verts, faces, _, _ = marching_cubes_lewiner(contact_mask)
+            area = mesh_surface_area(verts, faces) / 2
+            contact_area.append(area)
+            boundary_elements_uni_new.append((label1, label2))
+    return boundary_elements_uni_new, contact_area
 
 
 def construct_stat_embryo(cell_tree, max_time):
@@ -410,11 +419,13 @@ def get_surface_area(cell_mask):
     :param cell_mask: single cell mask
     :return surface_are: cell's surface are
     '''
-    ball_structure = morphology.cube(3) # TODO
-    erased_mask = ndimage.binary_erosion(cell_mask, ball_structure, iterations=1)
-    surface_area = np.logical_and(~erased_mask, cell_mask).sum()
+    # ball_structure = morphology.cube(3) # TODO
+    # erased_mask = ndimage.binary_erosion(cell_mask, ball_structure, iterations=1)
+    # surface_area = np.logical_and(~erased_mask, cell_mask).sum()
+    verts, faces, _, _ = marching_cubes_lewiner(cell_mask)
+    surface = mesh_surface_area(verts, faces)
 
-    return surface_area
+    return surface
 
 
 def update_time_tree(embryo_name, cell_name, time_point, file_lock, add=False):

@@ -112,7 +112,7 @@ def run_post(para):
     marker_volume0 = np.zeros_like(cell_bin_image, dtype=np.uint8)
     tem_point_list = np.transpose(np.array(point_list), [1,0]).tolist()
     marker_volume0[tem_point_list[0], tem_point_list[1], tem_point_list[2]] = 1
-    struc_el1 = np.ones((3,3,3), dtype=bool)
+    struc_el1 = np.ones((3, 3, 3), dtype=bool)
     marker_volume1 = ndimage.morphology.binary_dilation(marker_volume0, structure=struc_el1)
     marker_volume = ndimage.label(marker_volume1)[0]
     # EDT on mmembrane-based image

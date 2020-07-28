@@ -18,7 +18,6 @@ def check_folder_exist(file_name):
         os.makedirs(os.path.dirname(file_name))
 
 def how_2D_array_as_image(image0):
-    random.seed(1)
     image = (image0 / np.max(image0) * 250).astype(np.uint8)
     plt.imshow(image)
     plt.show()

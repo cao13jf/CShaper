@@ -318,11 +318,7 @@ def delete_isolate_labels(discrete_edt):
     [labelled_edt, _]= ndimage.label(discrete_edt, label_structure)
 
     # get the largest connected label
-    [sr, sc, sz] = discrete_edt.shape
-    sample_area = labelled_edt[np.ix_(range(int(sr/2) - 10, int(sr/2) + 10),
-                                      range(int(sc/2) - 10, int(sc/2) + 10),
-                                      range(int(sz/2) - 10, int(sz/2) + 10))]
-    [most_label, _] = stats.mode(sample_area, axis=None)
+    [most_label, _] = stats.mode(labelled_edt[discrete_edt == discrete_edt.max()], axis=None)
 
     valid_edt_mask0 = (labelled_edt == most_label[0])
     valid_edt_mask = ndimage.morphology.binary_closing(valid_edt_mask0, iterations=2)

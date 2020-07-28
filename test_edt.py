@@ -13,7 +13,6 @@ from train import NetFactory
 
 def test(config_file):
 
-
     #=============================================================
     #               1, Load configuration parameters
     #=============================================================

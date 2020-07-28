@@ -15,6 +15,7 @@ class DataLoader():
         self.with_ground_truth = config.get('with_ground_truth', False)
         self.data_names = config.get('data_names', None)
         ##  Data augmentation
+        self.train_ratio = config.get("train_ratio", 1.0)
         self.with_translate = config.get('with_translate', False)
         self.with_scale = config.get('with_scale', False)
         self.with_rotation = config.get('with_rotation', False)
@@ -65,7 +66,11 @@ class DataLoader():
         for one_embryo_name in self.embryo_names:
             raw_path = os.path.join(self.data_root[0], one_embryo_name, 'RawMemb')
             mask_path = os.path.join(self.data_root[0], one_embryo_name, 'SegMemb')
-            volumes_lists = os.listdir(raw_path)
+            volumes_lists = os.listdir(raw_path) # change image ratio image list
+
+            # sample training dataset
+            if self.train_ratio != 1:
+                volumes_lists = random.sample(volumes_lists, int(self.train_ratio * len(volumes_lists)))
             for TP_volume in tqdm(volumes_lists, desc='Loading Data in ' + raw_path):
                 # load RawMemb volume
                 volume, volume_name = self.__load_one_volume(raw_path, TP_volume)

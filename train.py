@@ -4,6 +4,8 @@ from __future__ import absolute_import, print_function
 
 #  import dependency library
 import sys
+import argparse
+import setproctitle
 from shutil import copyfile
 from tensorflow.contrib.layers.python.layers import regularizers
 
@@ -29,14 +31,15 @@ class NetFactory(object):
 #=============================================================
 #          main function for training
 #=============================================================
-def train(config_file):
+def train(config_file, train_ratio=1.0):
 
-
+    setproctitle.setproctitle("train_ratio:" + str(train_ratio))
     #=============================================================
     #               1, Load configuration parameters
     #=============================================================
     config = parse_config(config_file)
     config_data = config['data']
+    config_data["train_ratio"] = train_ratio
     config_net = config['network']
     config_train = config['training']
     random.seed(config_train.get('random_seed', 1))
@@ -142,7 +145,7 @@ def train(config_file):
             np.savetxt(loss_file, np.asarray(loss_list))
 
         if((n+1)%config_train['snapshot_iteration']  == 0):
-            saver.save(sess, config_train['model_save_prefix']+"_{0:}.ckpt".format(n+1))
+            saver.save(sess, config_train['model_save_prefix']+"_{}_{}.ckpt".format(str(train_ratio).replace(',', ''), n+1))
         ##  ~~~~~inspect intermediate results~~~~(optional)
         # if(n%100 == 0):
         #     s = sess.run(summ, feed_dict={x: input_x, y: output_y})
@@ -156,8 +159,10 @@ def train(config_file):
     sess.close()
     
 if __name__ == '__main__':
-    if(len(sys.argv) != 2):
-        raise Exception("Invaid number of input parameters!")
-    config_file = str(sys.argv[1])
-    assert(os.path.isfile(config_file))  # make sure config_file is a file name
-    train(config_file)
+    args = argparse.ArgumentParser()
+    args.add_argument("--cf", required=True)
+    args.add_argument("--train_ratio", type=float, default=1)
+    args = args.parse_args()
+    assert (os.path.isfile(args.cf)), "Config file {} doesn't ecist".format(args.cf)  # make sure config_file is a file name
+    assert (args.train_ratio > 0) & (args.train_ratio < 1.000001), "Invalid train ratio (0 < x < 1): {}".format(args.train_ratio)
+    train(config_file=args.cf, train_ratio=args.train_ratio)

@@ -315,14 +315,15 @@ def delete_isolate_labels(discrete_edt):
     delete all unconnected binary SegMemb
     '''
     label_structure = np.ones((3, 3, 3))
-    [labelled_edt, _]= ndimage.label(discrete_edt, label_structure)
+    [labelled_edt, _] = ndimage.label(discrete_edt == discrete_edt.max(), label_structure)
 
     # get the largest connected label
     [most_label, _] = stats.mode(labelled_edt[discrete_edt == discrete_edt.max()], axis=None)
 
+
     valid_edt_mask0 = (labelled_edt == most_label[0])
     valid_edt_mask = ndimage.morphology.binary_closing(valid_edt_mask0, iterations=2)
-    filtered_edt = np.copy(discrete_edt)
+    filtered_edt = np.ones_like(discrete_edt)
     filtered_edt[valid_edt_mask == 0] = 0
 
 

@@ -47,7 +47,6 @@ def run_shape_analysis(config):
     with open('./ShapeUtil/number_dictionary.txt', 'rb') as f:
         number_dict = pickle.load(f)
 
-
     # ========================================================
     #       sementing TPs in a parallel way
     # ========================================================
@@ -55,10 +54,10 @@ def run_shape_analysis(config):
     mpPool = mp.Pool(mp.cpu_count()-1, initializer=init, initargs=(file_lock,))
     configs = []
     config["cell_tree"] = cell_tree
-    for itime in range(1, max_time+1):
+    for itime in tqdm(range(1, max_time+1), desc="Compose configs"):
         config['time_point']=itime
         configs.append(config.copy())
-    #     cell_graph_network(config)
+    #     cell_graph_network(file_lock, config)
     for _ in tqdm(mpPool.imap_unordered(cell_graph_network, configs), total=len(configs), desc="Naming {} segmentations".format(embryo_name)):
         pass
 
@@ -79,7 +78,7 @@ def run_shape_analysis(config):
         shutil.rmtree('./ShapeUtil/TemCellGraph')
     # save statistical embryonic files
     # delete columns with all zeros for efficiency
-    stat_embryo = stat_embryo.loc[:, ( (stat_embryo != 0)&(~np.isnan(stat_embryo)) ).any(axis=0)]
+    stat_embryo = stat_embryo.loc[:, ((stat_embryo != 0)&(~np.isnan(stat_embryo)) ).any(axis=0)]
     save_file_name = os.path.join(config['save_folder'], config['embryo_name']+'_Stat.txt')
     save_file_name_csv = os.path.join(config['save_folder'], config['embryo_name']+'_Stat.csv')
     if not os.path.isdir(config['save_folder']):
@@ -191,8 +190,8 @@ def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
                 unify_seg[seg==raw_label] = target_label
                 changed_flag[seg==raw_label] = 1
                 # add volume and surface information
-                surface_area = get_surface_area(seg==raw_label)
-                nucleus_loc_to_save.loc[nucleus_loc_to_save.nucleus_label == target_label, "volume"] = (seg==raw_label).sum()
+                surface_area = get_surface_area(seg == raw_label)
+                nucleus_loc_to_save.loc[nucleus_loc_to_save.nucleus_label == target_label, "volume"] = (seg == raw_label).sum()
                 nucleus_loc_to_save.loc[nucleus_loc_to_save.nucleus_label == target_label, "surface"] = surface_area
             else:
                 # change whether two labels from the same mother
@@ -276,9 +275,10 @@ def add_relation(point_graph, division_seg):
     #  use translation on pixel on three directions to get the the contact area
     with open('./ShapeUtil/name_dictionary.txt', 'rb') as f:
         name_dict = pickle.load(f)
-    contact_pairs, contact_area = get_contact_area(division_seg)
-    for i, one_pair in enumerate(contact_pairs):
-        point_graph.add_edge(name_dict[one_pair[0]], name_dict[one_pair[1]], area=contact_area[i])
+    if np.unique(division_seg).shape[0] > 2:  # in case there are multiple cells
+        contact_pairs, contact_area = get_contact_area(division_seg)
+        for i, one_pair in enumerate(contact_pairs):
+            point_graph.add_edge(name_dict[one_pair[0]], name_dict[one_pair[1]], area=contact_area[i])
 
     return point_graph
 
@@ -297,12 +297,10 @@ def get_contact_area(volume):
     [x_bound, y_bound, z_bound] = np.nonzero(boundary_mask)
     boundary_elements = []
     for (x, y, z) in zip(x_bound, y_bound, z_bound):
-        neighbors = volume[np.ix_(range(x-1, x+2),
-                                         range(y-1, y+2),
-                                         range(z-1, z+2))]
+        neighbors = volume[np.ix_(range(x-1, x+2), range(y-1, y+2), range(z-1, z+2))]
         neighbor_labels = list(np.unique(neighbors))
         neighbor_labels.remove(0)
-        if len(neighbor_labels)==2:
+        if len(neighbor_labels) == 2:
             boundary_elements.append(neighbor_labels)
     boundary_elements_uni = list(np.unique(np.array(boundary_elements), axis=0))
     contact_area = []

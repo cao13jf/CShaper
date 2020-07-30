@@ -61,7 +61,6 @@ def run_post(para):
 
     #===========================================================
     #               Construct weighted graphload
-
     #===========================================================
     point_list, edge_list, edge_weight_list = construct_weighted_graph(cell_bin_image, local_max_h=1)
     if config_debug.get('save_graph_model', False):
@@ -154,7 +153,7 @@ def run_post(para):
         nucleus_seg = nucleus_seg.get_fdata().transpose([2, 1, 0])
         merged_seg, holes = cell_prob_with_nucleus(merged_seg, nucleus_seg) #TODO: some nucleus are lost in the nucleus stack, so acetree is used to filter gaps when naming each segmented region
         if holes.sum() != 0:
-            save_nii(holes,os.path.join(config_result['postseg_folder'], one_embryo+"Cavity", one_embryo + "_" + tp_str.zfill(3) + "_segCavity.nii.gz"))
+            save_nii(holes, os.path.join(config_result['postseg_folder'], one_embryo+"Cavity", one_embryo + "_" + tp_str.zfill(3) + "_segCavity.nii.gz"))
 
     # ===========================================================
     #  Seperate membrane region from the segmentation result

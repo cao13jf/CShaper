@@ -1,10 +1,12 @@
 ## CShaper
 
-Implementation for in *Establishment of morphological atlas of Caenorhabditis elegans embryo using deep-learning-based 4D
- segmentation*, by Jianfeng Cao, Guoye Guan, Vincy Wing Sze Ho, Ming-Kin Wong, Lu-Yan Chan, Chao Tang, Zhongying Zhao, & Hong Yan.
+Implementation for *Establishment of a morphological atlas of the Caenorhabditis elegans embryo using deep-learning-based 4D
+ segmentation*, by Jianfeng Cao<sup>#</sup>, Guoye Guan<sup>#</sup>, Vincy Wing Sze Ho<sup>#</sup>, Ming-Kin Wong, Lu-Yan Chan, Chao Tang, Zhongying Zhao, & Hong Yan.
+ 
+<sup>#</sup> equal contribution
 
 ### Usage
-This implementation is based on Tensorflow and python3.6, trained with one GPU NVIDIA 2080Ti oon Linux. Steps for training
+This implementation is based on Tensorflow and python3.6, trained with one GPU NVIDIA 2080Ti on Linux. Steps for training
 and testing are listed as below.
 * **Intsall dependency library**:
 ```buildoutcfg
@@ -15,7 +17,7 @@ in `./ConfigMemb/train_edt_discrete.txt`, then run
     ```buildoutcfg
     python train.py ./ConfigMemb/train_edt_discrete.txt
     ```
-* **Test**: Put the raw data (membane and nucleus stack, and CD files from [AceTree](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1501046/))
+* **Test**: Put the raw data (membrane and nucleus stack, and CD files from [AceTree](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1501046/))
 into `./Data/MembValidation/`. Example data is also available through previous data link. Set parameters in 
 `./ConfigMemb/test_edt_discrete.txt` and run
     ```buildoutcfg
@@ -48,10 +50,15 @@ into `./Data/MembValidation/`. Example data is also available through previous d
         
       |--Util/: utils for training and testing
     ```
+    Result folders will be automatically built.
 ### Related
 * Project file for CellProfiler involved in evaluation ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_ad_cityu_edu_hk/ETN3Z6j4TklAko6NvQDIujwBwzoixX26EajSOaoeeme2jg?download=1)).
 * Parameter files for RACE ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_ad_cityu_edu_hk/EX_iCNByGBtMlZI7G8bRgSMBqNfaCdAbq3cHDrGc-k6d5Q?download=1)). 
 
 
-### Acknowledgement
-We thank [brats17](https://github.com/taigw/brats17) which we referred to when implementing the code.
+### Acknowledgements
+* [brats17](https://github.com/taigw/brats17);
+* [niftynet](https://niftynet.io).
+
+### Contact
+jfcao3-c(at)my.cityu.edu.hk

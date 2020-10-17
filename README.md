@@ -51,6 +51,7 @@ into `./Data/MembValidation/`. The pretrained model is available through the [Go
       |--Util/: utils for training and testing
     ```
     Result folders will be automatically built.
+Codes for the normalization (e.g., resize, rotation) on the segmentation results are available at [CShaperPost](https://github.com/cao13jf/CShaperPost).
 ### Related
 * Project file for CellProfiler involved in evaluation ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_ad_cityu_edu_hk/ETN3Z6j4TklAko6NvQDIujwBwzoixX26EajSOaoeeme2jg?download=1)).
 * Parameter files for RACE ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_ad_cityu_edu_hk/EX_iCNByGBtMlZI7G8bRgSMBqNfaCdAbq3cHDrGc-k6d5Q?download=1)). 

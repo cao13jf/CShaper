@@ -6,6 +6,11 @@ ModelCell/
 ResultCell/
 ShapeUtil/RobustStat/
 ShapeUtil/TemCellGraph
+ConfigMemb/ShapeConfigs
+Resource
+Tem
+TestProject
+nibabel
 
 **.nii.gz
 **.png
@@ -18,6 +23,12 @@ ShapeUtil/.ipynb_checkpoints
 ResultCell/
 **.csv
 **.avi
+tem.py
+tem.sh
+run_shape_analysis.sh
+run_test_edt.sh
+run_train_edt.sh
+Dockfile
 venv
 
 !./ShapeUtil/*.csv

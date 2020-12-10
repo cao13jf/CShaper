@@ -56,10 +56,13 @@ Codes for the normalization (e.g., resize, rotation) on the segmentation results
 * Project file for CellProfiler involved in evaluation ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_ad_cityu_edu_hk/ETN3Z6j4TklAko6NvQDIujwBwzoixX26EajSOaoeeme2jg?download=1)).
 * Parameter files for RACE ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_ad_cityu_edu_hk/EX_iCNByGBtMlZI7G8bRgSMBqNfaCdAbq3cHDrGc-k6d5Q?download=1)). 
 
-
 ### Acknowledgements
 * [brats17](https://github.com/taigw/brats17);
 * [niftynet](https://niftynet.io).
 
 ### Contact
 jfcao3-c(at)my.cityu.edu.hk
+
+### Citation
+If our work is helpful for you, please consider the citation. `Cao, J., Guan, G., Ho, V.W.S. et al. Establishment of a morphological atlas of the Caenorhabditis elegans embryo using deep-learning-based 4D segmentation. 
+Nat Commun 11, 6254 (2020). https://doi.org/10.1038/s41467-020-19863-x`

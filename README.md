@@ -10,12 +10,12 @@ This implementation is based on Tensorflow and python3.6, trained with one GPU N
 and testing are listed as below.
 * **Intsall dependency library**:
 ```buildoutcfg
-    pip install requirements.txt
+    conda env create -f requirements.yml
 ```
 * **Train**: Download the data from this link (TBD) and put it into `./Data` folder, Set parameters
 in `./ConfigMemb/train_edt_discrete.txt`, then run
     ```buildoutcfg
-    python train.py ./ConfigMemb/train_edt_discrete.txt
+    python train.py --cf ./ConfigMemb/train_edt_discrete.txt
     ```
 * **Test**: Put the raw data (membrane and nucleus stack, and CD files from [AceTree](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1501046/))
 into `./Data/MembValidation/`. The pretrained model is available through the [Google Drive](https://drive.google.com/file/d/1ZwKKqAwVWr8YGGtdal-ZVxodyE7PUnb6/view?usp=sharing), which should be unzip to `./ModelCell/`. Example data is also available through previous data link. Set parameters in 

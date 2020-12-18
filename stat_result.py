@@ -127,22 +127,8 @@ def stat_embryo_no_nucleus(embryo_name):
 
 
 if __name__ == "__main__":
-    # embryo_names = ["200314plc1p1", "181210plc1p3", "200314plc1p2"] + \
-    #     "200309plc1p2, 200309plc1p3, 200310plc1p2, 200311plc1p1, 200315plc1p2, 200315plc1p3, 200316plc1p1, 200316plc1p2".split(",") + \
-    #     "200309plc1p1, 200312plc1p2".split(",") + \
-    #     "200311plc1p2, 200311plc1p3, 200312plc1p1, 200312plc1p3, 200314plc1p3, 200315plc1p1, 200316plc1p3, 181210plc1p1".split(",") + \
-    #     "181210plc1p2, 170704plc1p1".split(",") + \
-    #     ["200315plc1p1", "200311plc1p2", "200310plc1p2"]
-    # embryo_names = [embryo_name.replace(" ", "") for embryo_name in embryo_names]
 
-    # embryo_names = ["200315plc1p1", "200311plc1p2", "200310plc1p2"]
-    # embryo_names = ["200113plc1p2"]
-    # embryo_names = ["200710hmr1plc1p1", "200710hmr1plc1p2", "200710hmr1plc1p3"]
-
-    embryo_names = ["200113plc1p2", "181210plc1p2", "200310plc1p2", "170704plc1p1", "181210plc1p1",
-                    "200316plc1p3", "200312plc1p2", "200311plc1p3", "200309plc1p3", "200315plc1p2",
-                    "200316plc1p2", "200311plc1p1", "200312plc1p3", "200316plc1p1", "200314plc1p3",
-                    "200312plc1p1", "200315plc1p3"]
+    embryo_names = ["200309plc1p2"]
     # stat_embryo_no_nucleus(embryo_names[0])
     with mp.Pool(processes=16) as p:
         p.map(stat_embryo, embryo_names)

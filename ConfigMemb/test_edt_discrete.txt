@@ -7,14 +7,9 @@ data_root         = Data/MembTest
 # # [160]: 200309plc1p2, 200309plc1p3, 200310plc1p2, 200311plc1p1, 200315plc1p2, 200315plc1p3, 200316plc1p1, 200316plc1p2
 # # [155]: 200314plc1p2
 # # [150]: 200314plc1p1, 181210plc1p3
-<<<<<<< Updated upstream
-data_names        = [170704plc1p1]
-max_time          = 200
-=======
-# # exceptions: [200310plc1p2, 200311plc1p2, 200315plc1p1]
-data_names        = [200315plc1p1]
+
+data_names        = [200309plc1p2]
 max_time          = 160
->>>>>>> Stashed changes
 save_folder       = ResultCell/BinaryMemb
 with_ground_truth = False
 label_edt_transform   = True

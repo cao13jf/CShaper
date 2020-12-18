@@ -3,7 +3,7 @@
 import sys
 from tqdm import tqdm
 import multiprocessing as mp
-from skimage.morphology import watershed
+from skimage.segmentation import watershed
 from scipy.stats import mode
 
 # import user defined library

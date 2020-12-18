@@ -119,7 +119,7 @@ def test(config_file):
                     pred_fusion = (np.argmax(prob_sagittal, axis=-1)).astype(np.uint16)
                 pred = delete_isolate_labels(pred_fusion)
             else:
-                pred = prob_sagittal  # Regression prediction provides the MAP directly.
+                pred = prob_sagittal
             if(config_test.get('save_binary_seg', False)):
                 out_label = post_process_on_edt(pred).astype(np.int16)
             elif(config_test.get('save_predicted_map', False)):
@@ -137,8 +137,7 @@ def test(config_file):
             final_label = set_crop_to_volume(final_label, temp_bbox[0], temp_bbox[1], out_label)
             final_label = transpose_volumes_reverse(final_label, slice_direction)
             save_file = os.path.join(save_folder,emrbyo_name, emrbyo_name + "_" + img_names.split(".")[0].split("_")[1] + "_segMemb.nii.gz")
-            save_array_as_nifty_volume(final_label, save_file) # os.path.join(save_folder, one_embryo, one_embryo + "_" + tp_str.zfill(3) + "_cell.nii.gz")
-
+            save_array_as_nifty_volume(final_label, save_file)
             print(save_file)
         test_time = np.asarray(test_time)
         print('test time', test_time.mean())

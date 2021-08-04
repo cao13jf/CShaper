@@ -1,3 +1,4 @@
+# The upsampling part of DMapNet has been replaced with a decoder composed of multiple deconvolution filters
 from __future__ import absolute_import, print_function
 
 # import dependency library

@@ -27,7 +27,6 @@ class NetFactory(object):
         print('unsupported network:', name)
         exit()
 
-
 #=============================================================
 #          main function for training
 #=============================================================
@@ -76,20 +75,6 @@ def train(config_file, train_ratio=1.0):
             loss = weighted_one_hot_loss(predicty, y, class_num)
         else:
             loss = regression_loss(predicty, y)
-        ##  ~~~~~inspect intermediate results~~~~(optional)
-        # yshape = y.shape
-        # gt = tf.squeeze(y)
-        # sample_slice = gt[0, 0, :, :]
-        # pred_out = tf.argmax(predicty, axis=-1)
-        # pred_slice = pred_out[0, 0, :, :]
-        # sample_slice = tf.cast(sample_slice, tf.float32) / 16
-        # pred_slice = tf.cast(pred_slice, tf.float32) / 16
-        # sample_slice = tf.reshape(sample_slice, [1, yshape[2], yshape[3], 1])
-        # pred_slice = tf.reshape(pred_slice, [1, yshape[2], yshape[3], 1])
-        # tf.summary.image('Input', sample_slice, 3)
-        # tf.summary.image('Output', pred_slice, 3)
-        # loss_summary = tf.summary.scalar('Loss', loss)
-        #print('size of predicty:',predicty)
 
     #  initialize session and saver
     lr = config_train.get('learning_rate', 1e-3)
@@ -98,22 +83,11 @@ def train(config_file, train_ratio=1.0):
     sess.run(tf.global_variables_initializer())  # Give initial values to all variables.
     saver = tf.train.Saver()
 
-    #  ##  ~~~~~inspect intermediate results~~~~(optional)
-    # summ = tf.summary.merge_all()
-    # merge_summary = tf.summary.merge([loss_summary])
-    # if config_train.get('record_summary', False):
-    #     summary_dir = config_train.get('summary_dir', None)
-    #     assert summary_dir, 'Please specify the path for log saver'
-    #     saver_summary = tf.summary.FileWriter(os.path.join(summary_dir, net_name))
-    #     saver_summary.add_graph(sess.graph)
-
-
     #==============================================================
     #               3, Data loader
     #==============================================================
     dataloader = DataLoader(config_data)
     dataloader.load_data()
-
 
     # ==============================================================
     #               3, Start train
@@ -146,13 +120,6 @@ def train(config_file, train_ratio=1.0):
 
         if((n+1)%config_train['snapshot_iteration']  == 0):
             saver.save(sess, config_train['model_save_prefix']+"_{}_{}.ckpt".format(str(train_ratio).replace(',', ''), n+1))
-        ##  ~~~~~inspect intermediate results~~~~(optional)
-        # if(n%100 == 0):
-        #     s = sess.run(summ, feed_dict={x: input_x, y: output_y})
-        #     saver_summary.add_summary(s, n)
-        # if(n%10==0):
-        #     s = sess.run(loss_summary, feed_dict={x: input_x, y: output_y})
-        #     saver_summary.add_summary(s, n)
 
     timestr = time.strftime('%m_%d_%H_%M')
     copyfile(config_file, os.path.join(os.path.dirname(config_train['model_save_prefix']), config_net['net_name']+'Paramters-'+timestr+'.txt'))

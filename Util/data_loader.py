@@ -120,15 +120,12 @@ class DataLoader():
         label_shape = self.config['label_shape']
         data_slice_number = data_shape[0]  # slice number locates at first
         label_slice_number = label_shape[0]
-        slice_direction = self.config.get('slice_direction', 'axial')  # axial, sagittal, coronal or random
+
 
         # return batch size: [batch_size, slice_num, slice_h, slice_w, moda_chnl]
         data_batch = []
         label_batch = []
-        if (slice_direction == 'random'):  # random slice order
-            directions = ['axial', 'sagittal', 'coronal']
-            idx = random.randint(0, 2)
-            slice_direction = directions[idx]
+
         for i in range(batch_size):
             self.image_id = random.randint(0, len(self.data) - 1)  # random chose dataset
             data_volume = self.data[self.image_id]
@@ -139,16 +136,14 @@ class DataLoader():
                     [data_volume, label_volume], issegs=[False, True])
 
             [data_volume] = self.augment_data([data_volume], issegs=[False])
-            transposed_volume = transpose_volumes(data_volume, slice_direction)  # Transpose the direction of volume
-            volume_shape = transposed_volume.shape
+            volume_shape = data_volume.shape
             sub_data_shape = [data_slice_number, data_shape[1], data_shape[2]]
             sub_label_shape = [label_slice_number, label_shape[1], label_shape[2]]
             center_point = get_random_crop_center(volume_shape, sub_label_shape)
-            sub_data = crop_from_volume(transposed_volume, center_point, sub_data_shape)
+            sub_data = crop_from_volume(data_volume, center_point, sub_data_shape)
 
             if (self.with_ground_truth):
-                tranposed_label = transpose_volumes(label_volume, slice_direction)
-                sub_label = crop_from_volume(tranposed_label, center_point, sub_label_shape, fill='zero')
+                sub_label = crop_from_volume(label_volume, center_point, sub_label_shape, fill='zero')
 
             data_batch.append([sub_data])
             if (self.with_ground_truth):

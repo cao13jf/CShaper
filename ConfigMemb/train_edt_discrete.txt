@@ -19,8 +19,6 @@ with_translate        = False
 with_scale            = False
 with_rotation         = False
 with_flip             = False
-# 3 training directions: axial(default)+sagittal+random
-slice_direction       = random
 
 [network]
 edt_discrete        = False

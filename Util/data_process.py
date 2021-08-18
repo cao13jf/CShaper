@@ -138,48 +138,7 @@ def get_random_crop_center(input_shape, output_shape):
         else:
             centeri = random.randint(x0, x1)
         center.append(centeri)
-    return center    
-
-def transpose_volumes(volume, slice_direction):
-    """
-    transpose a list of volumes
-    inputs:
-        volumes: a list of nd volumes
-        slice_direction: 'axial', 'sagittal', or 'coronal'
-    outputs:
-        tr_volumes: a list of transposed volumes
-    """
-    if (slice_direction == 'axial'):
-        tr_volumes = volume
-    elif(slice_direction == 'sagittal'):
-        tr_volumes = np.transpose(volume, (2, 0, 1))
-    elif(slice_direction == 'coronal'):
-        tr_volumes = np.transpose(volume, (1, 0, 2))
-    else:
-        print('undefined slice direction:', slice_direction)
-        tr_volumes = volume
-    return tr_volumes
-
-
-def transpose_volumes_reverse(volume, slice_direction):
-    """
-    transpose a list of volumes
-    inputs:
-        volumes: a list of nd volumes
-        slice_direction: 'axial', 'sagittal', or 'coronal'
-    outputs:
-        tr_volumes: a list of transposed volumes
-    """
-    if (slice_direction == 'axial'):
-        tr_volumes = volume
-    elif(slice_direction == 'sagittal'):
-        tr_volumes = np.transpose(volume, (1, 2, 0))
-    elif(slice_direction == 'coronal'):
-        tr_volumes = np.transpose(volume, (1, 0, 2))
-    else:
-        print('undefined slice direction:', slice_direction)
-        tr_volumes = volume
-    return tr_volumes
+    return center
 
 def crop_from_volume(volume, in_center, output_shape, fill = 'random'):
     """

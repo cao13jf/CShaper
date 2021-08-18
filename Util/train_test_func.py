@@ -82,26 +82,3 @@ def volume_prediction(img, data_shape, label_shape, data_channel, class_num, bat
         # only 11 probability slices.
 
     return temp_prob
-
-def prediction_fusion(prob_sagittal, prob_axial):
-    '''
-    Deal with combining prediction from different directions
-    :param pred_list:
-    :return fused results on different directions:
-    '''
-
-    # Determine which part of axial should be fused with sagittal
-    largest = np.amax(prob_sagittal, axis=-1)
-    ## Use shift-max average to ignore intrinsical uncertainty on boundary
-    largest_translate = ndimage.shift(largest, [1, 1, 1], mode='constant', cval=0)
-    smoothed_largest = np.maximum(largest, largest_translate)
-    bin_prob0 = smoothed_largest < 0.5
-    [idx, idy, idz] = np.nonzero(bin_prob0)
-
-    # Hard fusion embedded with SegMemb
-    pred_axial = np.argmax(prob_axial, axis=-1).astype(np.uint16)
-    pred_sagittal = np.argmax(prob_sagittal, axis=-1).astype(np.int16)
-    pred_fused = np.copy(pred_sagittal)
-    pred_fused[idx, idy, idz] = pred_axial[idx, idy, idz]  # TODO: this step is too time-consuming
-
-    return pred_fused

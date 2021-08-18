@@ -5,7 +5,6 @@ import shutil
 from tqdm import tqdm
 from scipy import ndimage
 import multiprocessing as mp
-from skimage import morphology
 from skimage.measure import marching_cubes_lewiner, mesh_surface_area
 
 # import user defined library
@@ -155,15 +154,12 @@ def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
     ## extract nucleus location information in the aceTree
     nucleus_location = df_t.loc[:, ['z', 'x', 'y']].copy()
     ace_shape = config['image_size'].copy()
-    # nucleus_location['z'] = nucleus_location['z'] * config['z_resolution'] / config['xy_resolution']
-    # ace_shape[0] = ace_shape[0] * config['z_resolution'] / config['xy_resolution']
     nucleus_location = nucleus_location.values
 
     ## load seg volume
     seg = nib.load(seg_file).get_data().transpose([2, 1, 0])
     nucleus_location_zoom = (nucleus_location * np.array(seg.shape) / np.array(ace_shape)).astype(np.uint16)
     nucleus_location_zoom[:, 0] = seg.shape[0] - nucleus_location_zoom[:, 0]
-    # nucleus_location_zoom[:, 0] = seg.shape[0] - nucleus_location_zoom[:, 0]  # the embryo is reversed at z axis
     ####################To save nucleus location Data##########################
     nucleus_loc_to_save = pd.DataFrame.from_dict({'nucleus_label':nucleus_number, 'nucleus_name':nucleus_names,
                                                   f'x_{seg.shape[2]}':nucleus_location_zoom[:, 2], f'y_{seg.shape[1]}':nucleus_location_zoom[:, 1],
@@ -173,13 +169,13 @@ def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
     ##################################################
     #  unify the segmentation label
     unify_seg = np.zeros_like(seg)  #TODO: update cell mother daughter's label
-    changed_flag = np.zeros_like(seg)  # to label whether a cell has been updated with labels in the nucleus stack.
-    nucleus_loc_to_save["volume"] = "" ################### Used for wrting cell information
-    nucleus_loc_to_save["surface"] = "" ################### Used for wrting cell information
-    nucleus_loc_to_save["note"] = "" ################### Used for wrting cell information
+    changed_flag = np.zeros_like(seg)
+    nucleus_loc_to_save["volume"] = ""
+    nucleus_loc_to_save["surface"] = ""
+    nucleus_loc_to_save["note"] = ""
     for i, nucleus_loc in enumerate(list(nucleus_location_zoom)):
         target_label = nucleus_number[i]
-        if "Nuc" in nucleus_names[i]:  # ignore all SegCell starting with "Nuc****"
+        if "Nuc" in nucleus_names[i]:
             nucleus_loc_to_save.loc[nucleus_loc_to_save.nucleus_label == target_label, "note"] = "lost_hole"
             update_time_tree(config['embryo_name'], name_dict[target_label], time_point, file_lock, add=False)
             continue
@@ -200,7 +196,6 @@ def unify_label_seg_and_nuclues(file_lock, time_point, seg_file, config):
                 mother_name = cell_tree.parent(name_dict[target_label]).tag
                 if another_mother_name == mother_name:
                     mother_label = number_dict[mother_name]
-                    ################### add a virtual meother nucleus to the nucleus loc file
                     mother_loc, ch1, ch2 = get_mother_loc(cell_tree, mother_name, nucleus_loc_to_save)
                     if mother_loc is not None:
                         unify_seg[seg == raw_label] = mother_label
@@ -368,23 +363,6 @@ def assemble_result(point_embryo, time_point, number_dict):
             stat_embryo.loc[time_point, (one_edge[1], one_edge[0])] = edge_weight
         else:
             pass
-
-# #   neighbors to text for GUI
-#     neighbors_file = os.path.join(config["para"]['seg_folder'], config["para"]['embryo_name']+ "_guiNieghbor", config["para"]['embryo_name'] + "_" +str(time_point).zfill(3)+"_guiNeighbor.txt")
-#     if not os.path.isdir(os.path.dirname(neighbors_file)):
-#         os.makedirs(os.path.dirname(neighbors_file))
-#     for i, cell_name in enumerate(point_embryo.nodes()):
-#         neighbor_cells = list(point_embryo.neighbors(cell_name))
-#         neighbor_labels = [str(number_dict[name]) for name in neighbor_cells]
-#         cell_label = str(number_dict[cell_name])
-#         label_str = ",".join(([cell_label] + neighbor_labels))  # first one master cell
-#         if i == 0:
-#             with open(neighbors_file, "w") as f:
-#                 f.write(label_str+"\n")
-#         else:
-#             with open(neighbors_file, "a") as f:
-#                 f.write(label_str+"\n")
-
     return stat_embryo
 
 

@@ -69,5 +69,16 @@ Codes for the normalization (e.g., resize, rotation) on the segmentation results
 jfcao3-c(at)my.cityu.edu.hk
 
 ### Citation
-If our work is helpful for you, please consider the citation. `Cao, J., Guan, G., Ho, V.W.S. et al. Establishment of a morphological atlas of the Caenorhabditis elegans embryo using deep-learning-based 4D segmentation. 
-Nat Commun 11, 6254 (2020). https://doi.org/10.1038/s41467-020-19863-x`
+If our work is helpful for you, please consider the citation.
+<pre><code>
+@article{cao2020establishment,
+  title={Establishment of a morphological atlas of the Caenorhabditis elegans embryo using deep-learning-based 4D segmentation},
+  author={Cao, Jianfeng and Guan, Guoye and Ho, Vincy Wing Sze and Wong, Ming-Kin and Chan, Lu-Yan and Tang, Chao and Zhao, Zhongying and Yan, Hong},
+  journal={Nature communications},
+  volume={11},
+  number={1},
+  pages={6254},
+  year={2020},
+  publisher={Nature Publishing Group UK London}
+}
+</code></pre>

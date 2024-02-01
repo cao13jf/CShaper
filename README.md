@@ -5,6 +5,11 @@ Implementation for *Establishment of a morphological atlas of the Caenorhabditis
  
 <sup>#</sup> equal contribution
 
+### Update
+* **2023.12** We have developed desktop software <img src="./Images/CShaperLogo.png" alt="CShaperAppLogo" width="20" height="20"> [CShaperApp](https://github.com/cao13jf/CShaperApp) that integrates the training, prediction and analysis parts of CShaper framework. The backbone 
+and user interface have been improved. We highly recommend users to process the dataset with this open-source software.
+
+
 ### Usage
 This implementation is based on Tensorflow and python3.6, trained with one GPU NVIDIA 2080Ti on Linux. Steps for training
 and testing are listed as below.
@@ -12,13 +17,13 @@ and testing are listed as below.
 ```buildoutcfg
     conda env create -f requirements.yml
 ```
-* **Train**: Download the data from this link (TBD) and put it into `./Data` folder, Set parameters
+* **Train**: Download the data from this [link](https://portland-my.sharepoint.com/:f:/g/personal/jfcao3-c_my_cityu_edu_hk/EiL29xWYq2tGg5f4kXSsr3ABQ1hzBNGXesR4ySpe1GR5wQ?e=TRSWS0) and put it into `./Data` folder, Set parameters
 in `./ConfigMemb/train_edt_discrete.txt`, then run
     ```buildoutcfg
     python train.py --cf ./ConfigMemb/train_edt_discrete.txt
     ```
 * **Test**: Put the raw data (membrane and nucleus stack, and CD files from [AceTree](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1501046/))
-into `./Data/MembValidation/`. The pretrained model is available through the [Google Drive](https://drive.google.com/file/d/1ZwKKqAwVWr8YGGtdal-ZVxodyE7PUnb6/view?usp=sharing), which should be unzip to `./ModelCell/`. Example data is also available through previous data link. Set parameters in 
+into `./Data/MembValidation/`. The pretrained model is available through the [Google Drive](https://portland-my.sharepoint.com/:f:/g/personal/jfcao3-c_my_cityu_edu_hk/EsFepd81qjtBqsAZ_IJ58SsB58n2en1HGov5dnGHA1RCtw?e=JtdNuL), which should be unzip to `./ModelCell/`. Example data is also available through previous data link. Set parameters in 
 `./ConfigMemb/test_edt_discrete.txt` and run
     ```buildoutcfg
     python test_edt.py ./ConfigMemb/test_edt_discrete.txt
@@ -53,8 +58,8 @@ into `./Data/MembValidation/`. The pretrained model is available through the [Go
     Result folders will be automatically built.
 Codes for the normalization (e.g., resize, rotation) on the segmentation results are available at [CShaperPost](https://github.com/cao13jf/CShaperPost).
 ### Related
-* Project file for CellProfiler involved in evaluation ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_ad_cityu_edu_hk/ETN3Z6j4TklAko6NvQDIujwBwzoixX26EajSOaoeeme2jg?download=1)).
-* Parameter files for RACE ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_ad_cityu_edu_hk/EX_iCNByGBtMlZI7G8bRgSMBqNfaCdAbq3cHDrGc-k6d5Q?download=1)). 
+* Project file for CellProfiler involved in evaluation ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_my_cityu_edu_hk/ETN3Z6j4TklAko6NvQDIujwBwzoixX26EajSOaoeeme2jg?e=SxPp45)).
+* Parameter files for RACE ([link](https://portland-my.sharepoint.com/:u:/g/personal/jfcao3-c_my_cityu_edu_hk/EX_iCNByGBtMlZI7G8bRgSMBqNfaCdAbq3cHDrGc-k6d5Q?e=HoYX0w)). 
 
 ### Acknowledgements
 * [brats17](https://github.com/taigw/brats17);

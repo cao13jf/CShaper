@@ -17,7 +17,7 @@ and testing are listed as below.
 ```buildoutcfg
     conda env create -f requirements.yml
 ```
-* **Train**: Download the data from this [link](https://portland-my.sharepoint.com/:f:/g/personal/jfcao3-c_my_cityu_edu_hk/EiL29xWYq2tGg5f4kXSsr3ABQ1hzBNGXesR4ySpe1GR5wQ?e=TRSWS0) and put it into `./Data` folder, Set parameters
+* **Train**: Download the data from this [link](https://drive.google.com/drive/folders/1G_jDL0LeIgcKMfKhVo2XKFvDgfSDJD-M?usp=sharing) and put it into `./Data` folder, Set parameters
 in `./ConfigMemb/train_edt_discrete.txt`, then run
     ```buildoutcfg
     python train.py --cf ./ConfigMemb/train_edt_discrete.txt

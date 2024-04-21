@@ -23,7 +23,7 @@ in `./ConfigMemb/train_edt_discrete.txt`, then run
     python train.py --cf ./ConfigMemb/train_edt_discrete.txt
     ```
 * **Test**: Put the raw data (membrane and nucleus stack, and CD files from [AceTree](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1501046/))
-into `./Data/MembValidation/`. The pretrained model is available through the [Google Drive](https://portland-my.sharepoint.com/:f:/g/personal/jfcao3-c_my_cityu_edu_hk/EsFepd81qjtBqsAZ_IJ58SsB58n2en1HGov5dnGHA1RCtw?e=JtdNuL), which should be unzip to `./ModelCell/`. Example data is also available through previous data link. Set parameters in 
+into `./Data/MembValidation/`. The pretrained model is available through the [OneDrive](https://portland-my.sharepoint.com/:f:/g/personal/jfcao3-c_my_cityu_edu_hk/Eo33_1Ne7IlElcwvYqT7FXEBH8OqdNn4dpfKeY6zR17PZA?e=0ccTKw), which should be unzip to `./ModelCell/`. Example data is also available through previous data link. Set parameters in 
 `./ConfigMemb/test_edt_discrete.txt` and run
     ```buildoutcfg
     python test_edt.py ./ConfigMemb/test_edt_discrete.txt

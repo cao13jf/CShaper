@@ -1,6 +1,6 @@
 <p align="center"><img alt="Logo" src="./assets/logo.png"></p>
 <br>
-<p align="justify">This is the official implementation of CShaper published by <I>Nature Communications</I>. It is developed for segmenting densely distributed cells at single-cell elevel, supporting detailed morphological analysis on developmental cells with live-cell microscopy. CShaper was extensively tested on <i>C. elegans</i>, but it should work for other kinds of membrane images (possibly with re-retraining process).</p>
+<p align="justify">This is the official implementation of <a href="https://www.nature.com/articles/s41467-020-19863-x">CShaper</a> published by <I>Nature Communications</I>. It is developed for segmenting densely distributed cells at single-cell elevel, supporting detailed morphological analysis on developmental cells with live-cell microscopy. CShaper was extensively tested on <i>C. elegans</i>, but it should work for other kinds of membrane images (possibly with re-retraining process).</p>
 
 <h2>Usage</h2>
 <p align="justify"><b>Note</b>: This repository targets for runing CShapper with command lines. If you want to process your data with user-friendly GUI, pls prefer to <a href="https://github.com/cao13jf/CShaperApp" target="_blank">CShaperApp</a>.</p>

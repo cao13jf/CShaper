@@ -8,17 +8,17 @@ import argparse
 import setproctitle
 import time
 import tensorflow as tf
-from random import random
 from shutil import copyfile
 from tensorflow.keras import regularizers
 
 #  import user defined library
-from Util.loss_function import weighted_one_hot_loss
-from Util.data_loader import DataGene
-from Util.parse_config import parse_config
-from Util.DMapNetUpdated import DMapNetCompiled
+from util.loss_function import weighted_one_hot_loss
+from dataset.data_loader import DataGene
+from util.parse_config import parse_config
+from model.DMapNetUpdated import DMapNetCompiled
+
 tf.compat.v1.disable_eager_execution()
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 #=============================================================
 #          main function for training

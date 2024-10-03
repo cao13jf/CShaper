@@ -1,0 +1,40 @@
+
+## parameters for DL segmentation
+[data]
+data_root         = Data/Evaluation
+data_names        = [Memb]
+max_time          = 3
+save_folder       = ResultCell/BinaryMemb
+with_ground_truth = False
+label_edt_transform   = True
+valid_edt_width       = 30
+label_edt_discrete    = True
+edt_discrete_num      = 16
+
+[network]
+net_type            = DMapNet
+net_name            = DMapNet
+data_shape          = [24, 128, 96, 1]
+label_shape         = [16, 128, 96, 1]
+
+[testing]
+save_binary_seg      = True
+model_file          = ModelCell/logs/ModelCell/DMapNet_50000.ckpt
+save_predicted_map   = False
+slice_direction      = sagittal
+direction_fusion     = True
+batch_size           = 1
+only_post_process    = True
+post_process         = True
+nucleus_filter       = False
+nucleus_as_seed      = False
+
+
+## parameters for post processing
+[segdata]
+membseg_path       = ResultCell
+nucleus_data_root  = Data/Evaluation
+
+[result]
+save_cell_withmemb = True
+save_cell_nomemb   = False

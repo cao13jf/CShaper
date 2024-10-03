@@ -1,0 +1,13 @@
+
+[para]
+image_size = [108, 214, 150]
+#   If True, new name dictionary will be generated
+
+first_run = False
+embryo_names = [spheresDT]
+max_time = 150
+delete_tem_file = False
+seg_folder = ./ResultCell/BinaryMembPostseg
+cdfile_folder = ./Data/MembTest
+save_folder = ./ResultCell/StatShape
+save_nucleus_folder = ./ResultCell/NucleusLoc

@@ -1,0 +1,54 @@
+## parameters for DL segmentation
+[data]
+data_root         = Data/MembTest
+# # [200]: 181210plc1p2, 170704plc1p1
+# # [170]: 200311plc1p2, 200311plc1p3, 200312plc1p1, 200312plc1p3, 200314plc1p3, 200315plc1p1, 200316plc1p3, 181210plc1p1
+# # [165]: 200309plc1p1, 200312plc1p2,
+# # [160]: 200309plc1p2, 200309plc1p3, 200310plc1p2, 200311plc1p1, 200315plc1p2, 200315plc1p3, 200316plc1p1, 200316plc1p2
+# # [155]: 200314plc1p2
+# # [150]: 200314plc1p1, 181210plc1p3
+data_names        = [200113plc1p2]
+max_time          = 260
+save_folder       = ResultCell/BinaryMemb
+with_ground_truth = False
+label_edt_transform   = True
+valid_edt_width       = 30
+label_edt_discrete    = True
+edt_discrete_num      = 16
+
+[network]
+net_type            = CShaper
+net_name            = DMapNet
+data_shape          = [24, 128, 96, 1]
+label_shape         = [16, 128, 96, 1]
+model_file          = ModelCell/DMapNet_PUB_5000.ckpt
+
+[testing]
+save_binary_seg      = True
+save_predicted_map   = False
+slice_direction      = sagittal
+direction_fusion     = True
+batch_size           = 2
+only_post_process    = True
+post_process         = True
+nucleus_as_seeds     = False
+nucleus_filter       = True
+
+## parameters for post processing
+[segdata]
+membseg_path       = ResultCell
+nucleus_data_root  = Data/MembTest
+
+[result]
+save_cell_withmemb = True
+save_cell_nomemb   = False
+
+[debug]
+debug_mode         = False
+save_anisotropic   = False
+save_graph_model   = False
+save_init_watershed= False
+save_merged_seg    = False
+save_cell_nomemb   = False
+
+

@@ -12,12 +12,12 @@ cd CShaper
 conda env create -f environment.yml
 </code></pre>
 
-<p align="justify"><b>Step 2</b> (optional): train CShaper. Parameters in <code>configs/train.txt</code> should be adjusted accordingly. You may refer to the <a href=""https://portland-my.sharepoint.com/:f:/g/personal/jfcao3-c_my_cityu_edu_hk/Eue4QUFfU1lJpjfakesY6ssBURzkI4H3iK57fgPsO4ZyrA?e=i9mOKp target="_blank">example data</a> to organize your own dataset.</p>
+<p align="justify"><b>Step 2</b> (optional): train CShaper. Parameters in <code>configs/train.txt</code> should be adjusted accordingly. You may refer to the <a href="https://portland-my.sharepoint.com/:f:/g/personal/jfcao3-c_my_cityu_edu_hk/Es_8Yqeb2jVMvbwGeXxM8gYBE62PmkotlyfxazI9LpI0Dw?e=1HogRY">example data</a> to organize your own dataset.</p>
 <pre><code class="language-bash">
 python train.py --cf configs/train.txt
 </code></pre>
 
-<p align="justify"><b>Step 3</b>: Test CShaper. Parameters for testing CShaper are listed in <code>configs/test.txt</code>. Pretrained model can be downloaded at <a href="https://drive.google.com/drive/folders/1qJ9vJZaXENqiw0x9SGDuFiXTgmkfovVd?usp=drive_link" target="_blank">Google Drive</a>.</p>
+<p align="justify"><b>Step 3</b>: Test CShaper. Parameters for testing CShaper are listed in <code>configs/test.txt</code>. Pretrained model can be downloaded at <a href="https://drive.google.com/drive/folders/1qJ9vJZaXENqiw0x9SGDuFiXTgmkfovVd?usp=drive_link">Google Drive</a>.</p>
 <pre><code class="language-bash">
 python test.py --cf configs/test.txt
 </code></pre>
